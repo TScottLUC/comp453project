@@ -1,0 +1,498 @@
+CREATE DATABASE covid;
+
+USE covid;
+
+CREATE TABLE Gene
+	(GeneID	VARCHAR(20)		NOT NULL,
+	GeneName		VARCHAR(50),
+	GeneSymbol		VARCHAR(10),
+	LocusTag		VARCHAR(10),
+	SequenceLength	INT,
+	CONSTRAINT Gene_PK PRIMARY KEY (GeneID));
+
+CREATE TABLE Protein
+	(UniProtEntryID	VARCHAR(20)		NOT NULL,
+	ScientificName	VARCHAR(100),
+	Function		VARCHAR(100),
+	Size			INT,
+	StructureFile		VARCHAR(20),
+	GeneID		VARCHAR(20),
+	CONSTRAINT Protein_PK PRIMARY KEY (UniProtEntryID),
+	CONSTRAINT Gene_FK FOREIGN KEY (GeneID) REFERENCES Gene (GeneID));
+
+
+CREATE TABLE Paper
+	(DOI			VARCHAR(50)		NOT NULL,
+	Title			VARCHAR(255),
+	Journal		VARCHAR(100),
+	PublicationDate	DATE,
+	CONSTRAINT Paper_PK PRIMARY KEY (DOI));
+	
+	
+CREATE TABLE Authors
+	(DOI		VARCHAR(50)		NOT NULL,
+	AuthorName	VARCHAR(50)		NOT NULL,
+	CONSTRAINT Authors_PK PRIMARY KEY (DOI, AuthorName),
+	CONSTRAINT APaper_FK FOREIGN KEY (DOI) REFERENCES Paper (DOI));
+
+CREATE TABLE Ligand
+	(LigandID		VARCHAR(20)		NOT NULL,
+	LigandName		VARCHAR(50),
+	LigandFormula	VARCHAR(50),
+	DiagramFile		VARCHAR(30),
+	UniProtEntryID		VARCHAR(15),
+	CONSTRAINT Ligand_PK PRIMARY KEY (LigandID),
+	CONSTRAINT LProtein_FK FOREIGN KEY (UniProtEntryID) REFERENCES Protein (UniProtEntryID));
+
+CREATE TABLE Organism
+	(TaxonIdentifier	VARCHAR(15)		NOT NULL,
+GenusSpecies		VARCHAR(50),
+	Host			VARCHAR(50),
+	CONSTRAINT Organism_PK PRIMARY KEY (TaxonIdentifier));
+
+CREATE TABLE ReferencedIn
+	(UniProtEntryID	VARCHAR(15)		NOT NULL,
+	DOI			VARCHAR(50)	NOT NULL,
+	CONSTRAINT ReferencedIn_PK PRIMARY KEY (UniProtEntryID, DOI),
+	CONSTRAINT RProtein_FK FOREIGN KEY (UniProtEntryID) REFERENCES Protein (UniProtEntryID),
+	CONSTRAINT RPaper_FK FOREIGN KEY (DOI) REFERENCES Paper (DOI));
+
+CREATE TABLE BiologicalProcess
+	(GOTermID		VARCHAR(20)	NOT NULL,
+	Name			VARCHAR(255),
+	CONSTRAINT BiologicalProcess_PK PRIMARY KEY (GOTermID));
+
+CREATE TABLE GOAnnotations
+	(UniProtEntryID	VARCHAR(15)		NOT NULL,
+	GOTermID		VARCHAR(20)	NOT NULL,
+	Qualifier		VARCHAR(20),
+	CONSTRAINT GOAnnotations_PK PRIMARY KEY (UniProtEntryID, GOTermID),
+	CONSTRAINT GProtein_FK FOREIGN KEY (UniProtEntryID) REFERENCES Protein (UniProtEntryID),
+	CONSTRAINT GOTermID_FK FOREIGN KEY (GOTermID) REFERENCES BiologicalProcess (GOTermID));
+
+
+/* AFTER STRUCTURAL CHANGE */
+
+CREATE TABLE FoundIn
+	(UniProtEntryID	VARCHAR(20)	NOT NULL,
+	TaxonIdentifier		VARCHAR(15)		NOT NULL,
+	CONSTRAINT FoundIn_PK PRIMARY KEY (UniProtEntryID, TaxonIdentifier),
+	CONSTRAINT Protein_FK FOREIGN KEY (UniProtEntryID) REFERENCES Protein (UniProtEntryID),
+	CONSTRAINT Organism_FK FOREIGN KEY (TaxonIdentifier) REFERENCES Organism (TaxonIdentifier));
+
+
+
+
+
+
+/* INSERT STATEMENTS */
+
+INSERT INTO Gene (GeneID, GeneName, GeneSymbol, LocusTag, SequenceLength)
+	VALUES
+	("43740568", "Spike glycoprotein", "S", "GU280_gp02", 3821),
+("43740571", "Membrane glycoprotein", "M", "GU280_gp05", 668),
+("43740572", "ORF6 Protein", "ORF6", "GU280_gp06", 185),
+("43740577", "ORF8 Protein", "ORF8", "GU280_gp09", 365),
+("43740576", "ORF10 Protein", "ORF10", "GU280_gp11", 116),
+("43740570", "envelope protein", "E", "GU280_gp04", 228),
+("43740574", "ORF7b", "ORF7b", "GU280_gp08", 132),
+("43740578", "ORF1a polyprotein", "ORF1ab", "GU280_gp01", 21289),
+("43740569", "ORF3a protein", "ORF3a", "GU280_gp03", 29903),
+("43740573", "ORF7a Protein", "ORF7a", "GU280_gp07", 365),
+("43740575", "nucleocapsid phosphoprotein", "N", "GU280_gp10", 809);
+
+
+INSERT INTO Protein (UniProtEntryID, ScientificName, Function, Size, StructureFile, GeneID)
+	VALUES
+	("P0DTC2", "Spike glycoprotein", "Initiates infection through binding to human ACE2 receptor", 1273, "6vsb.png", "43740568"),
+("P0DTC5", "Membrane Protein", "Plays a role in virus morphogenesis and assembly", 222, NULL, "43740571"),
+("P0DTC6", "ORF6 Protein", "Disrupts cell nuclear import complex formation", 61, NULL, "43740572"),
+("P0DTC8", "ORF8 Protein", "Modulates host immune response", 121, "7jtl.png", "43740577"),
+("A0A663DJA2", "ORF10 Protein", "Protein Predicted - No function confirmed", 38, NULL, "43740576"),
+("P0DTC4", "Envelope small membrane protein", "Plays a central role in virus morphogenesis and assembly", 75, StructureFile, "43740570"),
+("P0DTF1", "Putative ORF3b protein", "Acts as an interferon antagonist when expressed ex vivo", 22, NULL, NULL),
+("P0DTD8", "ORF7b protein","No function specified", 43, NULL, "43740574"),
+("P0DTD3", "Putative ORF9c protein","Protein uncertain", 73, NULL, NULL),
+("P0DTD1", "Replicase polyprotein 1ab", "Multifunctional protein involved in the transcription and replication of viral RNAs", 7096, "default.jpg", "43740578" ),
+("P0DTC3", "ORF3a protein", "Forms homotetrameric ion channels (viroporin), for virus egress", 275, "default.jpg", "43740569"),
+("P0DTC7", "ORF7a Protein", "antagonist of host tetherin (BST2)", 121, "default.jpg", "43740573"),
+("P0DTD2", "ORF9b Protein", "Acts by binding to host TOMM70, disrupting its role in the interferon activation pathway", 97, "default.jpg", NULL),
+("P0DTC9", "Nucleoprotein", "Plays a fundamental role during virion assembly", 419, "default.jpg", "43740575");
+
+
+/* 3b and 9c have no gene entries */
+
+INSERT INTO Paper (DOI, Title, Journal, PublicationDate)
+	VALUES
+	("10.1016/j.molcel.2020.04.022", "A Multibasic Cleavage Site in the Spike Protein of SARS-CoV-2 Is Essential for Infection of Human Lung Cells", "Molecular Cell", "2020-05-21"),
+("10.1126/science.abb9983", "Site-specific glycan analysis of the SARS-CoV-2 spike", "Science", "2020-07-17"),
+("10.1038/s41586-020-2008-3" , "A new coronavirus associated with human respiratory disease in China", "Nature", "2020-02-03"),
+("10.1074/jbc.RA120.016175", "The SARS-CoV-2 envelope and membrane proteins modulate maturation and retention of the spike protein, allowing assembly of virus-like particles", "Journal of Biological Chemistry", "2020-12-03"),
+("10.1016/j.celrep.2020.108234", "Evasion of Type I Interferon by SARS-CoV-2", "Cell Reports", "2021-09-19"),
+("10.1073/pnas.2016650117", "SARS-CoV-2 Orf6 hijacks Nup98 to block STAT nuclear import and antagonize interferon signaling", "Proceedings of the National Academy of Sciences of the United States of America", "2020-10-23"),
+("10.1016/j.isci.2021.102293", "ORF8 contributes to cytokine storm during SARS-CoV-2 infection by activating IL-17 pathway", "iScience", "2021-03-09"),
+("10.1016/j.ijbiomac.2021.03.199", "Notable sequence homology of the ORF10 protein introspects the architecture of SARS-CoV-2", "International Journal of Biological Macromolecules", "2021-04-16"),
+("10.1152/ajplung.00443.2020", "In silico investigation of the viroporin E as a vaccine target against SARS-CoV-2", "American Journal of Physiology Lung Cellular and Molecular Physiology", "2021-04-06"),
+("10.15252/msb.202010079", "SARS‐CoV‐2 structural coverage map reveals viral protein assembly, mimicry, and hijacking mechanisms", "Molecular Systems Biology", "2021-09-17"),
+("10.1038/s42003-021-01891-y", "Fluorescence-detection size-exclusion chromatography utilizing nanobody technology for expression screening of membrane proteins", "Communications Biology", "2021-03-19"),
+("10.1186/s12859-021-04017-7", "Common low complexity regions for SARS-CoV-2 and human proteomes as potential multidirectional risk factor in vaccine development", "BMC Bioinformatics", "2021-04-08"),
+("10.1155/2020/7234961", "Sequence Analysis and Structure Prediction of SARS-CoV-2 Accessory Proteins 9b and ORF14: Evolutionary Analysis Indicates Close Relatedness to Bat Coronavirus", "BioMed Research International", "2020-10-20"),
+("10.2196/25995", "Isolating SARS-CoV-2 Strains From Countries in the Same Meridian: Genome Evolutionary Analysis", "JMIR Bioinformatics and Biotechnology", "2021-01-22"),
+
+("10.1126/science.abc8665", "Structural basis for translational shutdown and immune evasion by the Nsp1 protein of SARS-CoV-2.", "SCIENCE", "2020-04-09"),
+("10.1016/j.cell.2020.10.039", "β-Coronaviruses Use Lysosomes for Egress Instead of the Biosynthetic Secretory Pathway", "Cell", "2020-10-27"),
+("10.1016/j.devcel.2020.12.010", "ORF3a of the COVID-19 virus SARS-CoV-2 blocks HOPS complex-mediated assembly of the SNARE complex required for autolysosome formation", "Dev Cell", "2021-02-22"),
+("10.2807/1560-7917.ES.2020.26.1.2002106", "Early transmissibility assessment of the N501Y mutant strains of SARS-CoV-2 in the United Kingdom, October to November 2020.", "Euro Surveill.", "2021-01-26"),
+("10.1038/s41423-020-00603-6", "Ubiquitination of SARS-CoV-2 ORF7a promotes antagonism of interferon response.", "Cell Mol Immunol.", "2021-01-20"),
+("10.1038/s41423-020-0514-8", "SARS-CoV-2 Orf9b suppresses type I interferon responses by targeting TOM70.", "Cell Mol Immunol.", "2020-07-29"),
+("110.1038/s41467-021-23118-8", "Crystal structure of SARS-CoV-2 Orf9b in complex with human TOM70 suggests unusual virus-host interactions.", "Nat Commun.", "2021-05-14"),
+("10.1101/2020.05.17.100685", "Architecture and self-assembly of the SARS-CoV-2 nucleocapsid protein.", "bioRxiv", "2020-05-17"),
+("10.15252/embj.2020105938", "Structures of the SARS-CoV-2 nucleocapsid and their perspectives for drug design.", "EMBO J.", "2020-10-15");
+
+
+INSERT INTO Authors (DOI, AuthorName)
+	VALUES
+	("10.1016/j.molcel.2020.04.022", "Markus Hoffmann"),
+("10.1016/j.molcel.2020.04.022", "Hannah Kleine-Weber"),
+("10.1016/j.molcel.2020.04.022", "Stefan Pöhlmann"),
+("10.1126/science.abb9983", "Yasunori Watanabe"),
+("10.1126/science.abb9983", "Joel D Allen"),
+("10.1126/science.abb9983", "Daniel Wrapp"),
+("10.1126/science.abb9983", "Jason S McLellan"),
+("10.1126/science.abb9983", "Max Crispin"),
+("10.1038/s41586-020-2008-3", "Fan Wu"),
+("10.1038/s41586-020-2008-3", "Su Zhao"),
+("10.1038/s41586-020-2008-3", "Bin Yu"),
+("10.1038/s41586-020-2008-3", "Yan-Mei Chen"),
+("10.1038/s41586-020-2008-3", "Wen Wang"),
+("10.1038/s41586-020-2008-3", "Zhi-Gang Song"),
+("10.1038/s41586-020-2008-3", "Yi Hu"),
+("10.1038/s41586-020-2008-3", "Zhao-Wu Tao"),
+("10.1038/s41586-020-2008-3", "Jun-Hua Tian"),
+("10.1038/s41586-020-2008-3", "Yuan-Yuan Pei"),
+("10.1038/s41586-020-2008-3", "Ming-Li Yuan"),
+("10.1038/s41586-020-2008-3", "Yu-Liang Zhang"),
+("10.1038/s41586-020-2008-3", "Fa-Hui Dai"),
+("10.1038/s41586-020-2008-3", "Yi Liu"),
+("10.1038/s41586-020-2008-3", "Qi-Min Wang"),
+("10.1038/s41586-020-2008-3", "Jiao-Jiao Zheng"),
+("10.1038/s41586-020-2008-3", "Lin Xu"),
+("10.1038/s41586-020-2008-3", "Edward C Holmes"),
+("10.1038/s41586-020-2008-3", "Yong-Zhen Zhang"),
+("10.1074/jbc.RA120.016175", "Bertrand Boson"),
+("10.1074/jbc.RA120.016175", "Vincent Legros"),
+("10.1074/jbc.RA120.016175", "Bingjie Zhou"),
+("10.1074/jbc.RA120.016175", "Eglantine Siret"),
+("10.1074/jbc.RA120.016175", "Cyrille Mathieu"),
+("10.1074/jbc.RA120.016175", "François-Loïc Cosset"),
+("10.1074/jbc.RA120.016175", "Dimitri Lavillette"),
+("10.1074/jbc.RA120.016175", "Solène Denolly"),
+("10.1016/j.celrep.2020.108234", "Hongjie Xia"),
+("10.1016/j.celrep.2020.108234", "Zengguo Cao"),
+("10.1016/j.celrep.2020.108234", "Xuping Xie"),
+("10.1016/j.celrep.2020.108234", "Xianwen Zhang"),
+("10.1016/j.celrep.2020.108234", "John Yun-Chung Chen"),
+("10.1016/j.celrep.2020.108234", "Hualei Wang"),
+("10.1016/j.celrep.2020.108234", "Vineet D Menachery"),
+("10.1016/j.celrep.2020.108234", "Ricardo Rajsbaum"),
+("10.1016/j.celrep.2020.108234", "Pei-Yong Shi"),
+("10.1073/pnas.2016650117", "Brad R Rosenberg"),
+("10.1073/pnas.2016650117", "Beatriz M A Fontoura"),
+("10.1073/pnas.2016650117", "Adolfo García-Sastre"),
+("10.1073/pnas.2016650117", "Lisa Miorin"),
+("10.1073/pnas.2016650117", "Thomas Kehrer"),
+("10.1073/pnas.2016650117", "Maria Teresa Sanchez-Aparicio"),
+("10.1073/pnas.2016650117", "Ke Zhang"),
+("10.1073/pnas.2016650117", "Phillip Cohen"),
+("10.1073/pnas.2016650117", "Roosheel S Patel"),
+("10.1073/pnas.2016650117", "Anastasija Cupic"),
+("10.1073/pnas.2016650117", "Tadashi Makio"),
+("10.1073/pnas.2016650117", "Menghan Mei"),
+("10.1073/pnas.2016650117", "Elena Moreno"),
+("10.1073/pnas.2016650117", "Oded Danziger"),
+("10.1073/pnas.2016650117", "Kris M White"),
+("10.1073/pnas.2016650117", "Raveen Rathnasinghe"),
+("10.1073/pnas.2016650117", "Melissa Uccellini"),
+("10.1073/pnas.2016650117", "Shengyan Gao"),
+("10.1073/pnas.2016650117", "Teresa Aydillo"),
+("10.1073/pnas.2016650117", "Ignacio Mena"),
+("10.1073/pnas.2016650117", "Xin Yin"),
+("10.1073/pnas.2016650117", "Laura Martin-Sancho"),
+("10.1073/pnas.2016650117", "Nevan J Krogan"),
+("10.1073/pnas.2016650117", "Sumit K Chanda"),
+("10.1073/pnas.2016650117", "Michael Schotsaert"),
+("10.1073/pnas.2016650117", "Richard W Wozniak"),
+("10.1073/pnas.2016650117", "Yi Ren"),
+("10.1016/j.isci.2021.102293", "Xiaoyuan Lin"),
+("10.1016/j.isci.2021.102293", "Beibei Fu"),
+("10.1016/j.isci.2021.102293", "Songna Yin"),
+("10.1016/j.isci.2021.102293", "Zhifeng Li"),
+("10.1016/j.isci.2021.102293", "Huawen Liu"),
+("10.1016/j.isci.2021.102293", "Haiwei Zhang"),
+("10.1016/j.isci.2021.102293", "Na Xing"),
+("10.1016/j.isci.2021.102293", "Yu Wang"),
+("10.1016/j.isci.2021.102293", "Weiwei Xue"),
+("10.1016/j.isci.2021.102293", "Yan Xiong"),
+("10.1016/j.isci.2021.102293", "Shanfu Zhang"),
+("10.1016/j.isci.2021.102293", "Qingting Zhao"),
+("10.1016/j.isci.2021.102293", "Shiyao Xu"),
+("10.1016/j.isci.2021.102293", "Jing Zhang"),
+("10.1016/j.isci.2021.102293", "Peihui Wang"),
+("10.1016/j.isci.2021.102293", "Weiqi Nian"),
+("10.1016/j.isci.2021.102293", "Xingsheng Wang"),
+("10.1016/j.isci.2021.102293", "Haibo Wu"),
+("10.1016/j.ijbiomac.2021.03.199", "Sk Sarif Hassan"),
+("10.1016/j.ijbiomac.2021.03.199", "Diksha Attrish"),
+("10.1016/j.ijbiomac.2021.03.199", "Shinjini Ghosh"),
+("10.1016/j.ijbiomac.2021.03.199", "Pabitra Pal Choudhury"),
+("10.1016/j.ijbiomac.2021.03.199", "Vladimir N Uversky"),
+("10.1016/j.ijbiomac.2021.03.199", "Alaa A A Aljabali"),
+("10.1016/j.ijbiomac.2021.03.199", "Kenneth Lundstrom"),
+("10.1016/j.ijbiomac.2021.03.199", "Bruce D Uhal"),
+("10.1016/j.ijbiomac.2021.03.199", "Nima Rezaei"),
+("10.1016/j.ijbiomac.2021.03.199", "Murat Seyran"),
+("10.1016/j.ijbiomac.2021.03.199", "Damiano Pizzol"),
+("10.1016/j.ijbiomac.2021.03.199", "Parise Adadi"),
+("10.1016/j.ijbiomac.2021.03.199", "Antonio Soares"),
+("10.1016/j.ijbiomac.2021.03.199", "Tarek Mohamed Abd El-Aziz"),
+("10.1016/j.ijbiomac.2021.03.199", "Ramesh Kandimalla"),
+("10.1016/j.ijbiomac.2021.03.199", "Murtaza M Tambuwala"),
+("10.1016/j.ijbiomac.2021.03.199", "Gajendra Kumar Azad"),
+("10.1016/j.ijbiomac.2021.03.199", "Samendra P Sherchan"),
+("10.1016/j.ijbiomac.2021.03.199", "Wagner Baetas-da-Cruz"),
+("10.1016/j.ijbiomac.2021.03.199", "Amos Lal"),
+("10.1016/j.ijbiomac.2021.03.199", "Giorgio Palù"),
+("10.1016/j.ijbiomac.2021.03.199", "Kazuo Takayama"),
+("10.1016/j.ijbiomac.2021.03.199", "Ángel Serrano-Aroca"),
+("10.1016/j.ijbiomac.2021.03.199", "Debmalya Barh"),
+("10.1016/j.ijbiomac.2021.03.199", "Adam M Brufsky"),
+("10.1152/ajplung.00443.2020", "Erasmia Rouka"),
+("10.1152/ajplung.00443.2020", "Konstantinos I Gourgoulianis"),
+("10.1152/ajplung.00443.2020", "Sotirios G Zarogiannis"),
+("10.15252/msb.202010079", "Seán I O’Donoghue"),
+("10.15252/msb.202010079", "Andrea Schafferhans"),
+("10.15252/msb.202010079", "Neblina Sikta"),
+("10.15252/msb.202010079", "Christian Stolte"),
+("10.15252/msb.202010079", "Sandeep Kaur"),
+("10.15252/msb.202010079", "Bosco K Ho"),
+("10.15252/msb.202010079", "Stuart Anderson"),
+("10.15252/msb.202010079", "James B Procter"),
+("10.15252/msb.202010079", "Christian Dallago"),
+("10.15252/msb.202010079", "Nicola Bordin"),
+("10.15252/msb.202010079", "Matt Adcock"),
+("10.15252/msb.202010079", "Burkhard Rost"),
+("10.1038/s42003-021-01891-y", "Fei Jin"),
+("10.1038/s42003-021-01891-y", "Cheng Shen"),
+("10.1038/s42003-021-01891-y", "Yao Wang"),
+("10.1038/s42003-021-01891-y", "Mengqi Wang"),
+("10.1038/s42003-021-01891-y", "Minxuan Sun"),
+("10.1038/s42003-021-01891-y", "Motoyuki Hattori"),
+("10.1186/s12859-021-04017-7", "Aleksandra Gruca"),
+("10.1186/s12859-021-04017-7", "Joanna Ziemska-Legiecka"),
+("10.1186/s12859-021-04017-7", "Patryk Jarnot"),
+("10.1186/s12859-021-04017-7", "Elzbieta Sarnowska"),
+("10.1186/s12859-021-04017-7", "Tomasz J Sarnowski"),
+("10.1186/s12859-021-04017-7", "Marcin Grynberg"),
+("10.1155/2020/7234961", "Chittaranjan Baruah"),
+("10.1155/2020/7234961", "Papari Devi"),
+("10.1155/2020/7234961", "Dhirendra K Sharma"),
+("10.2196/25995", "Emilio Mastriani"),
+("10.2196/25995", "Alexey V Rakov"),
+("10.2196/25995", "Shu-Lin Liu"),
+("10.1126/science.abc8665", "Thoms M."), 
+("10.1126/science.abc8665", "Buschauer R."), 
+("10.1126/science.abc8665", "Ameismeier M."), 
+("10.1126/science.abc8665", "Koepke L."), 
+("10.1126/science.abc8665", "Denk T."), 
+("10.1126/science.abc8665", "Hirschenberger M."), 
+("10.1126/science.abc8665", "Kratzat H."), 
+("10.1126/science.abc8665", "Hayn M."), 
+("10.1126/science.abc8665", "Mackens-Kiani T."), 
+("10.1126/science.abc8665", "Cheng J."), 
+("10.1126/science.abc8665", "Straub J.H."), 
+("10.1126/science.abc8665", "Stuerzel C.M."), 
+("10.1126/science.abc8665", "Froehlich T."),
+("10.1126/science.abc8665", "Berninghausen O."), 
+("10.1126/science.abc8665", "Becker T."),
+("10.1126/science.abc8665", "Kirchhoff F."),
+("10.1126/science.abc8665", "Sparrer K.M.J."), 
+("10.1126/science.abc8665", "Beckmann R."),
+("10.1016/j.cell.2020.10.039", "Ghosh S."),
+("10.1016/j.cell.2020.10.039", "Dellibovi-Ragheb T.A."),
+("10.1016/j.cell.2020.10.039", "Kerviel A."),
+("10.1016/j.cell.2020.10.039", "Pak E."),
+("10.1016/j.cell.2020.10.039", "Qiu Q."),
+("10.1016/j.cell.2020.10.039", "Fisher M."),
+("10.1016/j.cell.2020.10.039", "Takvorian P.M."),
+("10.1016/j.cell.2020.10.039", "Bleck C."),
+("10.1016/j.cell.2020.10.039", "Hsu V.W."),
+("10.1016/j.cell.2020.10.039", "Fehr A.R."),
+("10.1016/j.cell.2020.10.039", "Perlman S."),
+("10.1016/j.cell.2020.10.039", "Achar S.R."),
+("10.1016/j.cell.2020.10.039", "Straus M.R."),
+("10.1016/j.cell.2020.10.039", "Whittaker G.R."),
+("10.1016/j.cell.2020.10.039", "de Haan C.A.M."),
+("10.1016/j.cell.2020.10.039", "Kehrl J."),
+("10.1016/j.cell.2020.10.039", "Altan-Bonnet G."),
+("10.1016/j.cell.2020.10.039", "Altan-Bonnet N."),
+("10.1016/j.devcel.2020.12.010", "Miao G."),
+("10.1016/j.devcel.2020.12.010", "Zhao H., Li Y."),
+("10.1016/j.devcel.2020.12.010", "Ji M., Chen Y."),
+("10.1016/j.devcel.2020.12.010", "Shi Y."), 
+("10.1016/j.devcel.2020.12.010", "Bi Y."),
+("10.1016/j.devcel.2020.12.010", "Wang P."),
+("10.1016/j.devcel.2020.12.010", "Zhang H."),
+("10.2807/1560-7917.ES.2020.26.1.2002106", "Leung K."),
+("10.2807/1560-7917.ES.2020.26.1.2002106", "Shum M.H."),
+("10.2807/1560-7917.ES.2020.26.1.2002106", "Leung G.M."),
+("10.2807/1560-7917.ES.2020.26.1.2002106", "Lam T.T."),
+("10.2807/1560-7917.ES.2020.26.1.2002106", "Wu J.T."),
+("10.1038/s41423-020-00603-6", "Cao Z."), 
+("10.1038/s41423-020-00603-6", "Xia H."),
+("10.1038/s41423-020-00603-6", "Rajsbaum R."),
+("10.1038/s41423-020-00603-6", "Xia X."),
+("10.1038/s41423-020-00603-6", "Wang H."), 
+("10.1038/s41423-020-00603-6", "Shi P.Y."),
+("10.1038/s41423-020-0514-8", "Jiang H.W."),
+("10.1038/s41423-020-0514-8", "Zhang H.N."),
+("10.1038/s41423-020-0514-8", "Meng Q.F."),
+("10.1038/s41423-020-0514-8", "Xie J."),
+("10.1038/s41423-020-0514-8", "Li Y."),
+("10.1038/s41423-020-0514-8", "Chen H."),
+("10.1038/s41423-020-0514-8", "Zheng Y.X."),
+("10.1038/s41423-020-0514-8", "Wang X.N."),
+("10.1038/s41423-020-0514-8", "Qi H."),
+("10.1038/s41423-020-0514-8", "Zhang J."),
+("10.1038/s41423-020-0514-8", "Wang P.H."),
+("10.1038/s41423-020-0514-8", "Han Z.G."),
+("10.1038/s41423-020-0514-8", "Tao S.C."),
+("110.1038/s41467-021-23118-8", "Gao X."),
+("110.1038/s41467-021-23118-8", "Zhu K."),
+("110.1038/s41467-021-23118-8", "Qin B."),
+("110.1038/s41467-021-23118-8", "Olieric V."),
+("110.1038/s41467-021-23118-8", "Wang M."),
+("110.1038/s41467-021-23118-8", "Cui S."),
+("10.1101/2020.05.17.100685", "Ye Q."),
+("10.1101/2020.05.17.100685", "West A.M.V."),
+("10.1101/2020.05.17.100685", "Silletti S."),
+("10.1101/2020.05.17.100685", "Corbett K.D."),
+("10.15252/embj.2020105938", "Peng Y."),
+("10.15252/embj.2020105938", "Du N."),
+("10.15252/embj.2020105938", "Lei Y."),
+("10.15252/embj.2020105938", "Dorje S."),
+("10.15252/embj.2020105938", "Qi J."),
+("10.15252/embj.2020105938", "Luo T."),
+("10.15252/embj.2020105938", "Gao G.F."),
+("10.15252/embj.2020105938", "Song H.");
+
+
+
+INSERT INTO Organism (TaxonIdentifier, GenusSpecies, Host)
+	VALUES
+	("2697049", "Betacoronavirus SARS CoV", "Homo Sapiens");
+
+INSERT INTO ReferencedIn (UniProtEntryID, DOI)
+	VALUES
+	("P0DTC2", "10.1016/j.molcel.2020.04.022"),
+("P0DTC2", "10.1126/science.abb9983"),
+("P0DTC2", "10.1038/s41586-020-2008-3"),
+("P0DTC5", "10.1038/s41586-020-2008-3"),
+("P0DTC5", "10.1074/jbc.RA120.016175"),
+("P0DTC6", "10.1038/s41586-020-2008-3"),
+("P0DTC6", "10.1073/pnas.2016650117"),
+("P0DTC8", "10.1038/s41586-020-2008-3"),
+("P0DTC8", "10.1016/j.isci.2021.102293"),
+("A0A663DJA2", "10.1038/s41586-020-2008-3"),
+("A0A663DJA2", "10.1016/j.ijbiomac.2021.03.199"),
+("P0DTC4", "10.1016/j.ijbiomac.2021.03.199"),
+("P0DTC4", "10.1152/ajplung.00443.2020"),
+("P0DTD8", "10.15252/msb.202010079"),
+("P0DTD8", "10.1038/s42003-021-01891-y"),
+("P0DTD3", "10.1155/2020/7234961"),
+("P0DTD3", "10.2196/25995"),
+("P0DTD1", "10.1038/s41586-020-2008-3"),
+("P0DTD1", "10.1126/science.abc8665"),
+("P0DTC3", "10.1016/j.cell.2020.10.039"),
+("P0DTC3", "10.1016/j.devcel.2020.12.010"),
+("P0DTC7", "10.2807/1560-7917.ES.2020.26.1.2002106"),
+("P0DTC7", "10.1038/s41423-020-00603-6"),
+("P0DTD2", "10.1038/s41423-020-0514-8"),
+("P0DTD2", "110.1038/s41467-021-23118-8"),
+("P0DTC9", "10.1101/2020.05.17.100685"),
+("P0DTC9", "10.15252/embj.2020105938");
+
+
+INSERT INTO BiologicalProcess (GOTermID, Name)
+	VALUES
+	("GO:0005515", "Protein Binding"),
+("GO:0019064", "Fusion of virus membrane with host plasma membrane"),
+("GO:0016021", "Integral component of membrane"),
+("GO:0030683", "Mitigation of host immune response by virus"),
+("GO:0044165", "host cell endoplasmic reticulum"),
+("GO:0044174", "host cell endosome"),
+("GO:0019068", "virion assembly"),
+("GO:0039723", "suppression by virus of host viral-induced cytoplasmic pattern recognition receptor signaling pathway via inhibition of TBK1 activity"),
+("GO:0039722", "suppression by virus of host toll-like receptor signaling pathway"),
+("GO:0039707", "pore formation by virus in membrane of host cell"),
+("GO:0098662", "inorganic cation transmembrane transport"),
+("GO:0044177", "host cell Golgi apparatus"),
+("GO:0039545", "suppression by virus of host viral-induced cytoplasmic pattern recognition receptor signaling pathway via inhibition of MAVS activity"),
+("GO:0019074", "viral RNA genome packaging"),
+("GO:0032688", "negative regulation of interferon-beta production");
+
+
+
+INSERT INTO GOAnnotations (UniProtEntryID, GOTermID, Qualifier)
+	VALUES
+	("P0DTC2", "GO:0005515", "enables"),
+("P0DTC2", "GO:0019064", "involved_in"),
+("P0DTC5", "GO:0005515", "enables"),
+("P0DTC5", "GO:0016021", "located_in"),
+("P0DTC6", "GO:0030683", "involved_in"),
+("P0DTC6", "GO:0044165", "located_in"),
+("P0DTC8", "GO:0005515", "enables"),
+("P0DTC8", "GO:0044174", "located_in"),
+("P0DTC4", "GO:0019068", "involved_in"),
+("P0DTC4", "GO:0016021", "located_in"),
+("P0DTF1", "GO:0030683", "involved_in"),
+("P0DTD1", "GO:0039722", "involved_in"),
+("P0DTD1", "GO:0039723", "involved_in"),
+("P0DTC3", "GO:0039707", "involved_in"),
+("P0DTC3", "GO:0098662", "involved_in"),
+("P0DTC7", "GO:0030683", "involved_in"),
+("P0DTC7", "GO:0044177", "located_in"),
+("P0DTD2", "GO:0030683", "involved_in"),
+("P0DTD2", "GO:0039545", "involved_in"),
+("P0DTC9", "GO:0019074", "involved_in"),
+("P0DTC9", "GO:0032688", "involved_in");
+
+INSERT INTO FoundIn (UniProtEntryID,TaxonIdentifier)
+	VALUES
+	("P0DTC2", "2697049"),
+("P0DTC5", "2697049"),
+("P0DTC6", "2697049"),
+("P0DTC8", "2697049"),
+("A0A663DJA2", "2697049"),
+("P0DTC4", "2697049"),
+("P0DTF1", "2697049"),
+("P0DTD8", "2697049"),
+("P0DTD3", "2697049"),
+("P0DTD1", "2697049"),
+("P0DTC3", "2697049"),
+("P0DTC7", "2697049"),
+("P0DTD2", "2697049"),
+("P0DTC9", "2697049");
+
+
+
+INSERT INTO Ligand (LigandID, LigandName, LigandFormula, DiagramFile, UniProtEntryID)
+	VALUES
+	("NAG", "2-acetamido-2-deoxy-beta-D-glucopyranose", "C8H15NO6", "NAG.svg", "P0DTC2"),
+("NA", "Sodium Ion", "Na", "NA.svg", "P0DTC8"),
+("GDP", "GUANOSINE-5’-DIPHOSPHATE", "C10H15N5O11P2", "default.jpg", "P0DTD1"),
+("ZN", "Zinc Ion", "Zn", "default.jpq", "P0DTD1"),
+("PEE", "1,2-dioleoyl-sn-glycero-3-phosphoethanolamine", "C41H78NO8P", "default.jpg", "P0DTC7"),
+("15P", "POLYETHYLENE GLYCOL (N=34)", "C69H140O35", "default.jpg", "P0DTD2"),
+("CL", "CHLORIDE ION", "Cl”, "default.jpg", "P0DTC9");
+
+
