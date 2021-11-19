@@ -3,8 +3,8 @@ import secrets
 from PIL import Image
 from flask import render_template, url_for, flash, redirect, request, abort
 from flaskDemo import app, db, bcrypt
-from flaskDemo.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm, DeptForm,DeptUpdateForm
-from flaskDemo.models import User, Post,Department, Dependent, Dept_Locations, Employee, Project, Works_On
+from flaskDemo.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm
+from flaskDemo.models import User, Gene, Protein, Paper, Authors, Ligand, Organism, ReferencedIn, BiologicalProcess, GOAnnotations, FoundIn
 from flask_login import login_user, current_user, logout_user, login_required
 from datetime import datetime
 
@@ -12,7 +12,7 @@ from datetime import datetime
 @app.route("/")
 @app.route("/home")
 def home():
-    results = Department.query.all()
+    results = Protein.query.all()
     return render_template('dept_home.html', outString = results)
     posts = Post.query.all()
     return render_template('home.html', posts=posts)

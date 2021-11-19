@@ -31,7 +31,7 @@
             </div>
             <!-- Navbar Right Side -->
             <div class="navbar-nav">
-              {% if current_user.is_authenticated %}
+              {% if (current_user.is_authenticated and current_user.account_type == "admin") %}
                 <a class="nav-item nav-link" href="{{ url_for('new_dept') }}">New Dept</a>
                 <a class="nav-item nav-link" href="{{ url_for('account') }}">Account</a>
                 <a class="nav-item nav-link" href="{{ url_for('logout') }}">Logout</a>
