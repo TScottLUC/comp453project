@@ -11,16 +11,16 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
 
     {% if title %}
-        <title>Department CRUD - {{ title }}</title>
+        <title>Covid Proteins - {{ title }}</title>
     {% else %}
-        <title>Department CRUD</title>
+        <title>Covid Proteins</title>
     {% endif %}
 </head>
 <body>
     <header class="site-header">
       <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
         <div class="container">
-          <a class="navbar-brand mr-4" href="/">Department CRUD</a>
+          <a class="navbar-brand mr-4" href="/">Covid Proteins</a>
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
@@ -31,10 +31,12 @@
             </div>
             <!-- Navbar Right Side -->
             <div class="navbar-nav">
-              {% if (current_user.is_authenticated and current_user.account_type == "admin") %}
+              {% if current_user.is_authenticated %}
+                <a class="nav-item nav-link" href="{{ url_for('goannotations') }}">GO Annotations</a>
                 <a class="nav-item nav-link" href="{{ url_for('new_dept') }}">New Dept</a>
                 <a class="nav-item nav-link" href="{{ url_for('account') }}">Account</a>
                 <a class="nav-item nav-link" href="{{ url_for('logout') }}">Logout</a>
+
               {% else %}
                 <a class="nav-item nav-link" href="{{ url_for('login') }}">Login</a>
                 <a class="nav-item nav-link" href="{{ url_for('register') }}">Register</a>

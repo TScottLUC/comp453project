@@ -23,8 +23,55 @@ def home():
               .add_columns(Faculty.facultyID, Faculty.facultyName, Qualified.Datequalified, Qualified.courseID)
     return render_template('join.html', title='Join',joined_1_n=results, joined_m_n=results2)
 
-   
+@app.route("/goannotations")
+def goannotations():
+    results = Protein.query.join(GOAnnotations, Protein.UniProtEntryID == GOAnnotations.UniProtEntryID) \
+                .add_columns(Protein.UniProtEntryID, Protein.ScientificName, Protein.Function, Protein.Size) \
+                .join(BiologicalProcess, GOAnnotations.GOTermID == BiologicalProcess.GOTermID) \
+                .add_columns(BiologicalProcess.GOTermID, BiologicalProcess.Name, GOAnnotations.Qualifier)
+    return render_template('goannotations.html', title="GO Annotations", m_n_join = results)
 
+@app.route("/goannotations/<GOTermID>/<UniProtEntryID>")
+@login_required
+def goannotation(GOTermID, UniProtEntryID):
+    goannotation = GOAnnotations.query.get_or_404([UniProtEntryID, GOTermID])
+    return render_template('goannotation.html', title=goannotation.UniProtEntryID + goannotation.GOTermID, goannotation=goannotation)
+
+@app.route("/goannotation/<GOTermID>/<UniProtEntryID>/update", methods=['GET', 'POST'])
+@login_required
+def update_goannotation(GOTermID, UniProtEntryID):
+   # dept = Department.query.get_or_404(dnumber)
+    #currentDept = dept.dname
+
+    #form = DeptUpdateForm()
+    #if form.validate_on_submit():          # notice we are are not passing the dnumber from the form
+     #   if currentDept !=form.dname.data:
+    #        dept.dname=form.dname.data
+      #  dept.mgr_ssn=form.mgr_ssn.data
+       # dept.mgr_start=form.mgr_start.data
+        #db.session.commit()
+        #flash('Your department has been updated!', 'success')
+        return redirect(url_for('goannotation', GOTermID=GOTermID, UniProtEntryID=UniProtEntryID))
+    #elif request.method == 'GET':              # notice we are not passing the dnumber to the form
+
+     #   form.dnumber.data = dept.dnumber
+      #  form.dname.data = dept.dname
+       # form.mgr_ssn.data = dept.mgr_ssn
+        #form.mgr_start.data = dept.mgr_start
+    #return render_template('create_dept.html', title='Update Department',
+     #                      form=form, legend='Update Department')
+
+
+
+
+@app.route("/dept/<GOTermID>/<UniProtEntryID>/delete", methods=['POST'])
+@login_required
+def delete_goannotation(GOTermID, UniProtEntryID):
+   # dept = Department.query.get_or_404(dnumber)
+    #db.session.delete(dept)
+    #db.session.commit()
+    #flash('The department has been deleted!', 'success')
+    return redirect(url_for('home'))
 
 @app.route("/about")
 def about():

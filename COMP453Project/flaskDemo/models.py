@@ -14,6 +14,9 @@ def load_user(user_id):
 class User(db.Model, UserMixin):
     __table__ = db.Model.metadata.tables['user']
 
+    def get_id(self):
+        return (self.userid)
+
     def __repr__(self):
         return f"User('{self.username}', '{self.email}', '{self.image_file}')"
 
