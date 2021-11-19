@@ -14,7 +14,7 @@ CREATE TABLE Protein
 	(UniProtEntryID	VARCHAR(20)		NOT NULL,
 	ScientificName	VARCHAR(100),
 	Function		VARCHAR(100),
-	Size			INT,
+	AALength		INT,
 	StructureFile		VARCHAR(20),
 	GeneID		VARCHAR(20),
 	CONSTRAINT Protein_PK PRIMARY KEY (UniProtEntryID),
@@ -109,7 +109,7 @@ INSERT INTO Gene (GeneID, GeneName, GeneSymbol, LocusTag, SequenceLength)
 ("43740575", "nucleocapsid phosphoprotein", "N", "GU280_gp10", 809);
 
 
-INSERT INTO Protein (UniProtEntryID, ScientificName, Function, Size, StructureFile, GeneID)
+INSERT INTO Protein (UniProtEntryID, ScientificName, Function, AALength, StructureFile, GeneID)
 	VALUES
 	("P0DTC2", "Spike glycoprotein", "Initiates infection through binding to human ACE2 receptor", 1273, "6vsb.png", "43740568"),
 ("P0DTC5", "Membrane Protein", "Plays a role in virus morphogenesis and assembly", 222, NULL, "43740571"),
