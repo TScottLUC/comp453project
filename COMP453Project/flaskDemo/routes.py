@@ -36,7 +36,7 @@ def assign(GOTermID, UniProtEntryID):
 def new_assign():
     form = AssignmentForm()
     if form.validate_on_submit():
-        assign = Assignment(uniprotid=form.uniprotid.data, gotermid=form.gotermid.data, qualifier=form.qualifier.data)
+        assign = GOAnnotations(UniProtEntryID=form.UniProtEntryID.data, GOTermID=form.GOTermID.data, Qualifier=form.Qualifier.data)
         db.session.add(assign)
         db.session.commit()
         flash('You have added a new assignment!', 'success')

@@ -8,16 +8,30 @@ from flaskDemo import db
 from flaskDemo.models import User, Gene, Protein, Paper, Authors, Ligand, Organism, ReferencedIn, BiologicalProcess, GOAnnotations, FoundIn
 from wtforms.fields.html5 import DateField
 
-'''
-uniprotid = GOAnnotations.query.with_entities(GOAnnotations.UniProtEntryID)
+#Get choices for Protein ID, GO term ID, and Qualifier
+proteins = GOAnnotations.query.with_entities(GOAnnotations.UniProtEntryID).distinct()
 results=list()
-for row in uniprotid:
+for row in proteins:
     rowDict=row._asdict()
     results.append(rowDict)
 proteinChoices = [(row['UniProtEntryID'],row['UniProtEntryID']) for row in results]
+
+goterms = GOAnnotations.query.with_entities(GOAnnotations.GOTermID).distinct()
+results=list()
+for row in goterms:
+    rowDict=row._asdict()
+    results.append(rowDict)
 gotermChoices = [(row['GOTermID'],row['GOTermID']) for row in results]
+
+
+qualifiers = GOAnnotations.query.with_entities(GOAnnotations.Qualifier).distinct()
+results=list()
+for row in qualifiers:
+    rowDict=row._asdict()
+    results.append(rowDict)
 qualifierChoices = [(row['Qualifier'],row['Qualifier']) for row in results]
-'''
+
+
 
 class RegistrationForm(FlaskForm):
     username = StringField('Username',
@@ -76,27 +90,22 @@ class PostForm(FlaskForm):
 
 class AssignmentForm(FlaskForm):
 
-    uniprotid = StringField('UniProt Entry ID', validators=[DataRequired(),Length(max=20)])
-    #protname = SelectField("Protein Scientific Name", choices=proteinChoices)
-    gotermid = StringField('GO Term ID', validators=[DataRequired(),Length(max=20)])
-    #gotermname = SelectField("GO Term", choices=gotermChoices)
-    qualifier = StringField('Qualifier', validators=[DataRequired(),Length(max=20)])
-    #gotermname = SelectField("Qualifier", choices=qualifierChoices)
+    #uniprotid = StringField('UniProt Entry ID', validators=[DataRequired(),Length(max=20)])
+    #gotermid = StringField('GO Term ID', validators=[DataRequired(),Length(max=20)])
+    #qualifier = StringField('Qualifier', validators=[DataRequired(),Length(max=20)])
+
+    UniProtEntryID = SelectField("UniProt Entry ID", choices=proteinChoices)
+    GOTermID = SelectField("GO Term ID", choices=gotermChoices)
+    Qualifier = SelectField("Qualifier", choices=qualifierChoices)
+
     submit = SubmitField('Add this assignment')
-    '''
-    def validate_uniprotid(self, uniprotid):    
-        protein = Protein.query.filter_by(proteinID=UniProtEntryID.data).first()
-        if protein:
-            raise ValidationError('That UniProt Entry ID is taken. Please choose a different one.')
-    def validate_gotermid(self, gotermid):    
-        goterm = BiologicalProcess.query.filter_by(gotermID=GOTermID.data).first()
-        if goterm:
-            raise ValidationError('That GO Term ID is taken. Please choose a different one.')
-    def validate_qualifier(self, gotermid):    
-        qualifier = GOAnnotations.query.filter_by(qual=Qualifier.data).first()
-        if qualifier:
-            raise ValidationError('That Qualifier is taken. Please choose a different one.')
-    '''
+    
+    def validate_entry(self, UniProtEntryID):    
+        protein = GOAnnotations.query.filter_by(UniProtEntryID=UniProtEntryID.data).first()
+        if protein and (str(protein.GOTermID) != str(self.GOTermID.data)) and (str(self.GOTermID.data) != str(self.Qualifier.data)):
+            raise ValidationError('That combination is taken. Please choose a different one.')
+    
+    
 
 '''  
 ##class DeptUpdateForm(FlaskForm):

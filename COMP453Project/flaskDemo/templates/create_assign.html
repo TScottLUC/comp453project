@@ -7,44 +7,44 @@
             <legend class="border-bottom mb-4">{{ legend }}</legend>
 			{% if legend != "Update Assignment" %}
             <div class="form-group">
-                {{ form.uniprotid.label(class="form-control-label") }}
-                {% if form.uniprotid.errors %}
-                    {{ form.uniprotid(class="form-control form-control-lg is-invalid") }}
+                {{ form.UniProtEntryID.label(class="form-control-label") }}
+                {% if form.UniProtEntryID.errors %}
+                    {{ form.UniProtEntryID(class="form-control form-control-lg is-invalid") }}
                     <div class="invalid-feedback">
-                        {% for error in form.uniprotid.errors %}
+                        {% for error in form.UniProtEntryID.errors %}
                             <span>{{ error }}</span>
                         {% endfor %}
                     </div>
                 {% else %}
-                    {{ form.uniprotid(class="form-control form-control-lg") }}
+                    {{ form.UniProtEntryID(class="form-control form-control-lg") }}
                 {% endif %}
             </div>
 			{% endif %}
 			
             <div class="form-group">
-                {{ form.gotermid.label(class="form-control-label") }}
-                {% if form.gotermid.errors %}
-                    {{ form.gotermid(class="form-control form-control-lg is-invalid") }}
+                {{ form.GOTermID.label(class="form-control-label") }}
+                {% if form.GOTermID.errors %}
+                    {{ form.GOTermID(class="form-control form-control-lg is-invalid") }}
                     <div class="invalid-feedback">
-                        {% for error in form.gotermid.errors %}
+                        {% for error in form.GOTermID.errors %}
                             <span>{{ error }}</span>
                         {% endfor %}
                     </div>
                 {% else %}
-                    {{ form.gotermid(class="form-control form-control-lg") }}
+                    {{ form.GOTermID(class="form-control form-control-lg") }}
                 {% endif %}
             </div>
 			<div class="form-group">
-                {{ form.qualifier.label(class="form-control-label") }}
-                {% if form.qualifier.errors %}
-                    {{ form.qualifier(class="form-control form-control-lg is-invalid") }}
+                {{ form.Qualifier.label(class="form-control-label") }}
+                {% if form.Qualifier.errors %}
+                    {{ form.Qualifier(class="form-control form-control-lg is-invalid") }}
                     <div class="invalid-feedback">
-                        {% for error in form.qualifier.errors %}
+                        {% for error in form.Qualifier.errors %}
                             <span>{{ error }}</span>
                         {% endfor %}
                     </div>
                 {% else %}
-                    {{ form.qualifier(class="form-control form-control-lg") }}
+                    {{ form.Qualifier(class="form-control form-control-lg") }}
                 {% endif %}
             </div>
         </fieldset>
