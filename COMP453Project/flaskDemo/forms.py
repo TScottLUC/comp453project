@@ -2,11 +2,12 @@ from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
 from flask_login import current_user
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField, IntegerField, DateField, SelectField, HiddenField
-from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError,Regexp
+from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
 from flaskDemo import db
 from flaskDemo.models import User, Gene, Protein, Paper, Authors, Ligand, Organism, ReferencedIn, BiologicalProcess, GOAnnotations, FoundIn
 from wtforms.fields.html5 import DateField
+import sys
 
 #Get choices for Protein ID, GO term ID, and Qualifier
 proteins = GOAnnotations.query.with_entities(GOAnnotations.UniProtEntryID).distinct()
@@ -99,11 +100,17 @@ class AssignmentForm(FlaskForm):
     Qualifier = SelectField("Qualifier", choices=qualifierChoices)
 
     submit = SubmitField('Add this assignment')
-    
-    def validate_entry(self, UniProtEntryID):    
-        protein = GOAnnotations.query.filter_by(UniProtEntryID=UniProtEntryID.data).first()
-        if protein and (str(protein.GOTermID) != str(self.GOTermID.data)) and (str(self.GOTermID.data) != str(self.Qualifier.data)):
-            raise ValidationError('That combination is taken. Please choose a different one.')
+
+    def validate(self):
+        if not FlaskForm.validate(self):
+            return False
+        result = True
+        protein = GOAnnotations.query.filter_by(UniProtEntryID=self.UniProtEntryID.data, GOTermID=self.GOTermID.data).first()
+        if protein:
+            self.UniProtEntryID.errors.append('That combination is taken. Please choose a different one.')
+            self.GOTermID.errors.append('That combination is taken. Please choose a different one.')
+            return False
+        return result
     
     
 
