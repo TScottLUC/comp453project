@@ -49,11 +49,11 @@ def new_assign():
 @app.route("/assign/<GOTermID>/<UniProtEntryID>/delete", methods=['POST'])
 @login_required
 def delete_assign(GOTermID, UniProtEntryID):
-    return"delete page under construction"
-    dept = Department.query.get_or_404(dnumber)
-    db.session.delete(dept)
+    #return"delete page under construction"
+    goannotation = GOAnnotations.query.get_or_404([UniProtEntryID, GOTermID]))
+    db.session.delete(goannotation)
     db.session.commit()
-    flash('The department has been deleted!', 'success')
+    flash('The assignment has been deleted!', 'success')
     return redirect(url_for('home'))
 
 
