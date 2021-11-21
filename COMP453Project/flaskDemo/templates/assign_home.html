@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block content %}
+    {% for row in m_n_join %}
+        <article class="media content-section">
+          <div class="media-body">
+            <div class="article-metadata">
+              <a class="mr-2" href="#">{{ row }}</a>		  
+            </div>
+			<h2><a class="article-title" href="{{ url_for('assign', GOTermID=row.GOTermID, UniProtEntryID=row.UniProtEntryID) }}">{{ row.ScientificName }} {{ row.Qualifier }} {{ row.Name }}</a></h2>
+           
+          </div>
+        </article>
+     {% endfor %}
+{% endblock content %}

@@ -5,10 +5,10 @@
     <div class="media-body">
       <div class="article-metadata">
         <a class="mr-2" href="#">{{ goannotation.UniProtEntryID }} {{ goannotation.Qualifier }} {{ goannotation.GOTermID }}</a>
-        <small class="text-muted"></small>
+        <small class="text-muted">{{now.strftime('%A %B, %d %Y %H:%M:%S')}}</small>
 
           <div>
-            <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{{ url_for('update_goannotation', GOTermID=goannotation.GOTermID, UniProtEntryID=goannotation.UniProtEntryID) }}">Update</a>
+            <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{{ url_for('update_assign', GOTermID=goannotation.GOTermID, UniProtEntryID=goannotation.UniProtEntryID) }}">Update</a>
             <button type="button" class="btn btn-danger btn-sm m-1" data-toggle="modal" data-target="#deleteModal">Delete</button>
           </div>
  
@@ -21,14 +21,14 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="deleteModalLabel">Delete Department?</h5>
+          <h5 class="modal-title" id="deleteModalLabel">Delete Assignment?</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <form action="{{ url_for('delete_goannotation', GOTermID=goannotation.GOTermID, UniProtEntryID=goannotation.UniProtEntryID) }}" method="POST">
+          <form action="{{ url_for('delete_assign', GOTermID=goannotation.GOTermID, UniProtEntryID=goannotation.UniProtEntryID) }}" method="POST">
             <input class="btn btn-danger" type="submit" value="Delete">
           </form>
         </div>
