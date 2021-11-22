@@ -50,7 +50,7 @@ def new_assign():
 @login_required
 def delete_assign(GOTermID, UniProtEntryID):
     #return"delete page under construction"
-    goannotation = GOAnnotations.query.get_or_404([UniProtEntryID, GOTermID]))
+    goannotation = GOAnnotations.query.get_or_404([UniProtEntryID, GOTermID])
     db.session.delete(goannotation)
     db.session.commit()
     flash('The assignment has been deleted!', 'success')

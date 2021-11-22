@@ -10,19 +10,19 @@ from wtforms.fields.html5 import DateField
 import sys
 
 #Get choices for Protein ID, GO term ID, and Qualifier
-proteins = GOAnnotations.query.with_entities(GOAnnotations.UniProtEntryID).distinct()
+proteins = Protein.query.with_entities(Protein.UniProtEntryID, Protein.ScientificName).distinct()
 results=list()
 for row in proteins:
     rowDict=row._asdict()
     results.append(rowDict)
-proteinChoices = [(row['UniProtEntryID'],row['UniProtEntryID']) for row in results]
+proteinChoices = [(row['UniProtEntryID'],row['ScientificName']) for row in results]
 
-goterms = GOAnnotations.query.with_entities(GOAnnotations.GOTermID).distinct()
+goterms = BiologicalProcess.query.with_entities(BiologicalProcess.GOTermID, BiologicalProcess.Name).distinct()
 results=list()
 for row in goterms:
     rowDict=row._asdict()
     results.append(rowDict)
-gotermChoices = [(row['GOTermID'],row['GOTermID']) for row in results]
+gotermChoices = [(row['GOTermID'],row['Name']) for row in results]
 
 
 qualifiers = GOAnnotations.query.with_entities(GOAnnotations.Qualifier).distinct()
