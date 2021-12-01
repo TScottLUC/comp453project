@@ -3,7 +3,7 @@ import secrets
 from PIL import Image
 from flask import render_template, url_for, flash, redirect, request, abort
 from flaskDemo import app, db, bcrypt
-from flaskDemo.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm, AssignmentForm
+from flaskDemo.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm, AssignmentForm, GOAnnotationUpdateForm
 from flaskDemo.models import User, Gene, Protein, Paper, Authors, Ligand, Organism, ReferencedIn, BiologicalProcess, GOAnnotations, FoundIn
 from flask_login import login_user, current_user, logout_user, login_required
 from datetime import datetime
@@ -60,26 +60,26 @@ def delete_assign(GOTermID, UniProtEntryID):
 @app.route("/assign/<GOTermID>/<UniProtEntryID>/update", methods=['GET', 'POST'])
 @login_required
 def update_assign(GOTermID, UniProtEntryID):
-    return"update page under construction"
-    dept = Department.query.get_or_404(dnumber)
-    currentDept = dept.dname
 
-    form = DeptUpdateForm()
+    goAnnotation = GOAnnotations.query.get_or_404([UniProtEntryID, GOTermID])
+    currentUniProtEntryID = goAnnotation.UniProtEntryID
+    currentGOTermID = goAnnotation.GOTermID
+    currentQualifier = goAnnotation.Qualifier
+
+    form = GOAnnotationUpdateForm(startingUniProtEntryID=currentUniProtEntryID, startingGOTermID=currentGOTermID)
     if form.validate_on_submit():          # notice we are are not passing the dnumber from the form
-        if currentDept !=form.dname.data:
-            dept.dname=form.dname.data
-            dept.mgr_ssn=form.mgr_ssn.data
-            dept.mgr_start=form.mgr_start.data
-            db.session.commit()
-            flash('Your department has been updated!', 'success')
-        return redirect(url_for('goannotation', GOTermID=GOTermID, UniProtEntryID=UniProtEntryID))
+        goAnnotation.UniProtEntryID=form.UniProtEntryID.data
+        goAnnotation.GOTermID=form.GOTermID.data
+        goAnnotation.Qualifier=form.Qualifier.data
+        db.session.commit()
+        flash('Your GO Annotation has been updated!', 'success')
+        return redirect(url_for('assign', GOTermID=goAnnotation.GOTermID, UniProtEntryID=goAnnotation.UniProtEntryID))
     elif request.method == 'GET':              # notice we are not passing the dnumber to the form
-        form.dnumber.data = dept.dnumber
-        form.dname.data = dept.dname
-        form.mgr_ssn.data = dept.mgr_ssn
-        form.mgr_start.data = dept.mgr_start
-    return render_template('create_dept.html', title='Update Department',
-                           form=form, legend='Update Department')
+        form.UniProtEntryID.data = currentUniProtEntryID
+        form.GOTermID.data = currentGOTermID
+        form.Qualifier.data = currentQualifier
+    return render_template('create_assign.html', title='Update Assignment',
+                           form=form, legend='Update Assignment')
 
 @app.route("/register", methods=['GET', 'POST'])
 def register():

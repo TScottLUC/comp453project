@@ -5,7 +5,6 @@
         {{ form.hidden_tag() }}
         <fieldset class="form-group">
             <legend class="border-bottom mb-4">{{ legend }}</legend>
-			{% if legend != "Update Assignment" %}
             <div class="form-group">
                 {{ form.UniProtEntryID.label(class="form-control-label") }}
                 {% if form.UniProtEntryID.errors %}
@@ -17,7 +16,6 @@
                     </div>
                 {% else %}
                     {{ form.UniProtEntryID(class="form-control form-control-lg") }}
-                {% endif %}
             </div>
 			{% endif %}
 			
