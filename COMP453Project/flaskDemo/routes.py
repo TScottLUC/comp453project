@@ -8,10 +8,22 @@ from flaskDemo.models import User, Gene, Protein, Paper, Authors, Ligand, Organi
 from flask_login import login_user, current_user, logout_user, login_required
 from datetime import datetime
 
-
 @app.route("/")
 @app.route("/home")
 def home():
+    results = Protein.query.all()
+    return render_template('home.html', title="Home", proteins = results)
+
+@app.route("/")
+@app.route("/<UniProtEntryID>/info", methods=['Get','Post'])
+def protein(UniProtEntryID):
+    protein = Protein.query.get_or_404(UniProtEntryID)
+    return render_template('protein_page.html', title=protein.UniProtEntryID, protein=protein, now=datetime.utcnow())
+
+
+@app.route("/")
+@app.route("/go_assignments")
+def go_assignments():
     results = Protein.query.join(GOAnnotations, Protein.UniProtEntryID == GOAnnotations.UniProtEntryID) \
                 .add_columns(Protein.UniProtEntryID, Protein.ScientificName, Protein.Function, Protein.AALength) \
                 .join(BiologicalProcess, GOAnnotations.GOTermID == BiologicalProcess.GOTermID) \

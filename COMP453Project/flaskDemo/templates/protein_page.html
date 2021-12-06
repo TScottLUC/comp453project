@@ -1,0 +1,13 @@
+{% extends "layout.html" %}
+{% block content %}
+	<article class="media content-section">
+	<!--    <img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pics/default.jpg')}}"> -->
+        <div class="media-body">
+			<h2><a class="article-title" href="#">{{ protein.ScientificName }}</a></h2>
+            <p class="article-content">UniProt ID: {{ protein.UniProtEntryID }}</p>
+			<p class="article-content">Gene ID: {{ protein.GeneID }}</p>
+			<p class="article-content">Amino acid length: {{ protein.AALength }}</p>
+			<p class="article-content">Protein's function: {{ protein.Function }}</p>
+        </div>
+    </article>
+{% endblock content %}

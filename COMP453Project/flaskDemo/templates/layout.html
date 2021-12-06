@@ -32,7 +32,8 @@
             <!-- Navbar Right Side -->
             <div class="navbar-nav">
               {% if current_user.is_authenticated %}
-                <a class="nav-item nav-link" href="{{ url_for('new_assign') }}">New Assignment</a>
+                <a class="nav-item nav-link" href="{{ url_for('go_assignments') }}">GO Assignments</a>
+				<a class="nav-item nav-link" href="{{ url_for('new_assign') }}">New Assignment</a>
                 <a class="nav-item nav-link" href="{{ url_for('account') }}">Account</a>
                 <a class="nav-item nav-link" href="{{ url_for('logout') }}">Logout</a>
 
