@@ -98,7 +98,7 @@ class GOAnnotationUpdateForm(FlaskForm):
 
     UniProtEntryID = SelectField("UniProt Entry ID", choices=proteinChoices)
     GOTermID = SelectField("GO Term ID", choices=gotermChoices)
-    Qualifier = SelectField("Qualifier", choices=qualifierChoices)
+    Qualifier = StringField("Qualifier", validators=[DataRequired()])
 
     submit = SubmitField('Update this assignment')
 

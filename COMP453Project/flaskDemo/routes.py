@@ -52,7 +52,7 @@ def new_assign():
         db.session.add(assign)
         db.session.commit()
         flash('You have added a new assignment!', 'success')
-        return redirect(url_for('home'))
+        return redirect(url_for('go_assignments'))
     return render_template('create_assign.html', title='New Assignment',
                            form=form, legend='New Assignment')
 
@@ -66,7 +66,7 @@ def delete_assign(GOTermID, UniProtEntryID):
     db.session.delete(goannotation)
     db.session.commit()
     flash('The assignment has been deleted!', 'success')
-    return redirect(url_for('home'))
+    return redirect(url_for('go_assignments'))
 
 
 @app.route("/assign/<GOTermID>/<UniProtEntryID>/update", methods=['GET', 'POST'])
