@@ -8,8 +8,31 @@
 			<p class="article-content">Amino acid length: {{ protein.AALength }}</p>
 			<p class="article-content">Protein's function: {{ protein.Function }}</p>
 			{% if protein.StructureFile and protein.StructureFile != "default.jpg" %}
-				<img src="{{ url_for('static', filename='PDB Images/' + protein.StructureFile) }}" style="width:400px;height:400px">
+				<img src="{{ url_for('static', filename='PDB Images/' + protein.StructureFile) }}">
 			{% endif %}
         </div>
     </article>
+	<article id="gene" class="media content-section">
+		<div class="media-body">
+			<h2 class="article-title">Gene</h2>
+			<p class="article-content">Gene ID: {{ gene.GeneID }}</p>
+			<p class="article-content">Gene Name: {{ gene.GeneName }}</p>
+			<p class="article-content">Gene Symbol: {{ gene.GeneSymbol }}</p>
+			<p class="article-content">Locus Tag: {{ gene.LocusTag }}</p>
+			<p class="article-content">Sequence Length: {{ gene.SequenceLength }}</p>
+		</div>
+	</article>
 {% endblock content %}
+
+{% block sidebar %}
+	<div class="content-section">
+		<h3>Jump to:</h3>
+		<ul class="list-group">
+			<a href="#gene"><li class="list-group-item list-group-item-light">Gene</li></a>
+			<li class="list-group-item list-group-item-light">Other</li>
+			<li class="list-group-item list-group-item-light">Other2</li>
+			<li class="list-group-item list-group-item-light">Other3</li>
+		</ul>
+		</p>
+	</div>
+{% endblock sidebar %}

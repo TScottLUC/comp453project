@@ -7,6 +7,8 @@ from flaskDemo.forms import RegistrationForm, LoginForm, UpdateAccountForm, Post
 from flaskDemo.models import User, Gene, Protein, Paper, Authors, Ligand, Organism, ReferencedIn, BiologicalProcess, GOAnnotations, FoundIn
 from flask_login import login_user, current_user, logout_user, login_required
 from datetime import datetime
+import mysql.connector
+from mysql.connector import Error
 
 @app.route("/")
 @app.route("/home")
@@ -18,7 +20,24 @@ def home():
 @app.route("/<UniProtEntryID>/info", methods=['Get','Post'])
 def protein(UniProtEntryID):
     protein = Protein.query.get_or_404(UniProtEntryID)
-    return render_template('protein_page.html', title=protein.UniProtEntryID, protein=protein, now=datetime.utcnow())
+
+    try:
+        conn = mysql.connector.connect(host='localhost', database='covid',user='tps',password='password')
+        if conn.is_connected():
+            cursor = conn.cursor(dictionary=True)
+        else:
+            return ('problem')
+        cursor.execute("SELECT * FROM gene LEFT JOIN protein ON gene.GeneID = protein.GeneID WHERE protein.UniProtEntryID = '" + str(UniProtEntryID) + "'")
+
+        gene = cursor.fetchone()
+
+    except Error as e:
+          print(e)
+
+    finally:
+        conn.close()
+
+    return render_template('protein_page.html', title=protein.UniProtEntryID, protein=protein, gene=gene, now=datetime.utcnow())
 
 
 @app.route("/")
