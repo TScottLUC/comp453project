@@ -112,6 +112,62 @@ def update_assign(GOTermID, UniProtEntryID):
     return render_template('create_assign.html', title='Update Assignment',
                            form=form, legend='Update Assignment')
 
+@app.route("/AALength", methods=['Get','Post'])
+def aminoAcidLength():
+    proteins = Protein.query.all()
+
+    try:
+        conn = mysql.connector.connect(host='localhost', database='covid',user='student',password='student')
+        if conn.is_connected():
+            cursor = conn.cursor(dictionary=True)
+        else:
+            return ('problem')
+        cursor.execute("SELECT AVG(AALength) AS avgAALength FROM protein")
+        amino = cursor.fetchone()
+        cursor.execute("SELECT * FROM protein WHERE AALength > (SELECT AVG(AALength) as AverageAALength FROM protein)")
+        proteins = cursor.fetchall()
+
+    except Error as e:
+          print(e)
+
+    finally:
+        conn.close()
+
+    return render_template('amino.html', proteins=proteins, amino=amino, now=datetime.utcnow())
+
+
+@app.route("/paperDJ", methods=['Get','Post'])
+def paperDateJournal():
+    allpapers = Paper.query.all()
+
+    try:
+        conn = mysql.connector.connect(host='localhost', database='covid',user='student',password='student')
+        if conn.is_connected():
+            cursor = conn.cursor(dictionary=True)
+        else:
+            return ('problem')
+
+        cursor.execute("SELECT * FROM paper WHERE Journal='Cell Mol Immunol.' AND PublicationDate > '2021-01-01'")
+        papers = cursor.fetchall()
+
+    except Error as e:
+          print(e)
+
+    finally:
+        conn.close()
+
+    return render_template('paperDJ.html', papers=papers, now=datetime.utcnow())
+
+
+@app.route("/paperYears", methods=['Get', 'Post'])
+def paperByYear():
+    allpapers = Paper.query.all()
+    papers = Paper.query.filter(Paper.PublicationDate > '2021-01-01')
+
+    return render_template('paperYears.html', papers=papers, now=datetime.utcnow())
+    
+
+
 @app.route("/register", methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
