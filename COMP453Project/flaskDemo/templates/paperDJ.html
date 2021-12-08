@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+{% block content %}
+    {% for paper in papers %}
+        <article class="media content-section">
+          <div class="media-body">
+            <h2><a class="nav-item nav-link" href="{{ url_for('paperDateJournal', DOI=paper.DOI) }}">{{ paper.Title }}</a></h2>
+            <p class="article-content">ID: {{ paper.DOI }}</p>
+          </div>
+        </article>
+    {% endfor %}
+{% endblock content %}
