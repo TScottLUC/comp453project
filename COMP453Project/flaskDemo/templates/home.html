@@ -5,6 +5,16 @@
           <div class="media-body">
             <h2><a class="nav-item nav-link" href="{{ url_for('protein', UniProtEntryID=protein.UniProtEntryID) }}">{{ protein.ScientificName }}</a></h2>
             <p class="article-content">ID: {{ protein.UniProtEntryID }}</p>
+			{% for location in locations %}
+				{% if protein.UniProtEntryID == location.UniProtEntryID %}
+					<p class="article-content">Protein is located in: {{ location.Name }}</p>
+				{% endif %}
+			{% endfor %}
+			{% for ligand in ligands %}
+				{% if protein.UniProtEntryID == ligand.UniProtEntryID %}
+					<p class="article-content">Protein has a known ligand it binds to</p>
+				{% endif %}
+			{% endfor %}
           </div>
         </article>
     {% endfor %}

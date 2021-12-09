@@ -13,8 +13,30 @@ from mysql.connector import Error
 @app.route("/")
 @app.route("/home")
 def home():
-    results = Protein.query.all()
-    return render_template('home.html', title="Home", proteins = results)
+    
+    try:
+        conn = mysql.connector.connect(host='localhost', database='covid',user='student',password='student')
+        if conn.is_connected():
+            cursor = conn.cursor(dictionary=True)
+        else:
+            return ('problem')
+
+        cursor.execute("SELECT * FROM protein")
+        proteins = cursor.fetchall()
+
+        cursor.execute("SELECT protein.UniProtEntryID, goannotations.Qualifier, biologicalprocess.Name FROM protein, goannotations, biologicalprocess WHERE protein.UniProtEntryID = goannotations.UniProtEntryID AND goannotations.GOTermID = biologicalprocess.GOTermID AND goannotations.GOTermID IN (SELECT GOTermID FROM goannotations WHERE Qualifier = '"'located_in'"')")
+        locations = cursor.fetchall()
+
+    except Error as e:
+        print(e)
+
+    finally:
+        conn.close()
+
+    subquery = Ligand.query.with_entities(Ligand.UniProtEntryID).subquery()
+    ligands = Protein.query.filter(Protein.UniProtEntryID.in_(subquery)).distinct()
+
+    return render_template('home.html', title="Home", proteins=proteins, locations=locations, ligands=ligands)
 
 @app.route("/")
 @app.route("/<UniProtEntryID>/info", methods=['Get','Post'])
@@ -22,7 +44,7 @@ def protein(UniProtEntryID):
     protein = Protein.query.get_or_404(UniProtEntryID)
 
     try:
-        conn = mysql.connector.connect(host='localhost', database='covid',user='tps',password='password')
+        conn = mysql.connector.connect(host='localhost', database='covid',user='student',password='student')
         if conn.is_connected():
             cursor = conn.cursor(dictionary=True)
         else:
@@ -30,7 +52,7 @@ def protein(UniProtEntryID):
         cursor.execute("SELECT * FROM gene LEFT JOIN protein ON gene.GeneID = protein.GeneID WHERE protein.UniProtEntryID = '" + str(UniProtEntryID) + "'")
 
         gene = cursor.fetchone()
-
+        
     except Error as e:
           print(e)
 
@@ -80,7 +102,6 @@ def new_assign():
 @app.route("/assign/<GOTermID>/<UniProtEntryID>/delete", methods=['POST'])
 @login_required
 def delete_assign(GOTermID, UniProtEntryID):
-    #return"delete page under construction"
     goannotation = GOAnnotations.query.get_or_404([UniProtEntryID, GOTermID])
     db.session.delete(goannotation)
     db.session.commit()
@@ -98,14 +119,14 @@ def update_assign(GOTermID, UniProtEntryID):
     currentQualifier = goAnnotation.Qualifier
 
     form = GOAnnotationUpdateForm(startingUniProtEntryID=currentUniProtEntryID, startingGOTermID=currentGOTermID)
-    if form.validate_on_submit():          # notice we are are not passing the dnumber from the form
+    if form.validate_on_submit():         
         goAnnotation.UniProtEntryID=form.UniProtEntryID.data
         goAnnotation.GOTermID=form.GOTermID.data
         goAnnotation.Qualifier=form.Qualifier.data
         db.session.commit()
         flash('Your GO Annotation has been updated!', 'success')
         return redirect(url_for('assign', GOTermID=goAnnotation.GOTermID, UniProtEntryID=goAnnotation.UniProtEntryID))
-    elif request.method == 'GET':              # notice we are not passing the dnumber to the form
+    elif request.method == 'GET':              
         form.UniProtEntryID.data = currentUniProtEntryID
         form.GOTermID.data = currentGOTermID
         form.Qualifier.data = currentQualifier
