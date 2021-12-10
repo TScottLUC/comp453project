@@ -186,8 +186,13 @@ def paperByYear():
     papers = Paper.query.filter(Paper.PublicationDate > '2021-01-01')
 
     return render_template('paperYears.html', papers=papers, now=datetime.utcnow())
-    
 
+@app.route("/annotationQualifierGoID", methods=['Get', 'Post'])
+def annotationQualifierGoID():
+    proteins = GOAnnotations.query.filter(GOAnnotations.Qualifier == 'enables', GOAnnotations.GOTermID== 'GO:0005515')
+    #proteins = Protein.query.filter(Protein.UniProtEntryID.in_(subquery)).distinct()
+
+    return render_template('home2.html', proteins=proteins, now=datetime.utcnow())
 
 @app.route("/register", methods=['GET', 'POST'])
 def register():
