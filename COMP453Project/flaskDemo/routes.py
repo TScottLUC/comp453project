@@ -2,36 +2,23 @@ import os
 import secrets
 from PIL import Image
 from flask import render_template, url_for, flash, redirect, request, abort
-from flaskDemo import app, db, bcrypt
+from flaskDemo import app, db, bcrypt, mysql
 from flaskDemo.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm, AssignmentForm, GOAnnotationUpdateForm
 from flaskDemo.models import User, Gene, Protein, Paper, Authors, Ligand, Organism, ReferencedIn, BiologicalProcess, GOAnnotations, FoundIn
 from flask_login import login_user, current_user, logout_user, login_required
 from datetime import datetime
-import mysql.connector
-from mysql.connector import Error
 
 @app.route("/")
 @app.route("/home")
 def home():
     
-    try:
-        conn = mysql.connector.connect(host='localhost', database='covid',user='student',password='student')
-        if conn.is_connected():
-            cursor = conn.cursor(dictionary=True)
-        else:
-            return ('problem')
+    cursor = mysql.connection.cursor()
 
-        cursor.execute("SELECT * FROM protein")
-        proteins = cursor.fetchall()
+    cursor.execute("SELECT * FROM protein")
+    proteins = cursor.fetchall()
 
-        cursor.execute("SELECT protein.UniProtEntryID, goannotations.Qualifier, biologicalprocess.Name FROM protein, goannotations, biologicalprocess WHERE protein.UniProtEntryID = goannotations.UniProtEntryID AND goannotations.GOTermID = biologicalprocess.GOTermID AND goannotations.GOTermID IN (SELECT GOTermID FROM goannotations WHERE Qualifier = '"'located_in'"')")
-        locations = cursor.fetchall()
-
-    except Error as e:
-        print(e)
-
-    finally:
-        conn.close()
+    cursor.execute("SELECT protein.UniProtEntryID, goannotations.Qualifier, biologicalprocess.Name FROM protein, goannotations, biologicalprocess WHERE protein.UniProtEntryID = goannotations.UniProtEntryID AND goannotations.GOTermID = biologicalprocess.GOTermID AND goannotations.GOTermID IN (SELECT GOTermID FROM goannotations WHERE Qualifier = '"'located_in'"')")
+    locations = cursor.fetchall()
 
     subquery = Ligand.query.with_entities(Ligand.UniProtEntryID).subquery()
     ligands = Protein.query.filter(Protein.UniProtEntryID.in_(subquery)).distinct()
@@ -43,21 +30,10 @@ def home():
 def protein(UniProtEntryID):
     protein = Protein.query.get_or_404(UniProtEntryID)
 
-    try:
-        conn = mysql.connector.connect(host='localhost', database='covid',user='student',password='student')
-        if conn.is_connected():
-            cursor = conn.cursor(dictionary=True)
-        else:
-            return ('problem')
-        cursor.execute("SELECT * FROM gene LEFT JOIN protein ON gene.GeneID = protein.GeneID WHERE protein.UniProtEntryID = '" + str(UniProtEntryID) + "'")
+    cursor = mysql.connection.cursor()
+    cursor.execute("SELECT * FROM gene LEFT JOIN protein ON gene.GeneID = protein.GeneID WHERE protein.UniProtEntryID = '" + str(UniProtEntryID) + "'")
 
-        gene = cursor.fetchone()
-        
-    except Error as e:
-          print(e)
-
-    finally:
-        conn.close()
+    gene = cursor.fetchone()
 
     return render_template('protein_page.html', title=protein.UniProtEntryID, protein=protein, gene=gene, now=datetime.utcnow())
 
@@ -137,22 +113,11 @@ def update_assign(GOTermID, UniProtEntryID):
 def aminoAcidLength():
     proteins = Protein.query.all()
 
-    try:
-        conn = mysql.connector.connect(host='localhost', database='covid',user='student',password='student')
-        if conn.is_connected():
-            cursor = conn.cursor(dictionary=True)
-        else:
-            return ('problem')
-        cursor.execute("SELECT AVG(AALength) AS avgAALength FROM protein")
-        amino = cursor.fetchone()
-        cursor.execute("SELECT * FROM protein WHERE AALength > (SELECT AVG(AALength) as AverageAALength FROM protein)")
-        proteins = cursor.fetchall()
-
-    except Error as e:
-          print(e)
-
-    finally:
-        conn.close()
+    cursor = mysql.connection.cursor()
+    cursor.execute("SELECT AVG(AALength) AS avgAALength FROM protein")
+    amino = cursor.fetchone()
+    cursor.execute("SELECT * FROM protein WHERE AALength > (SELECT AVG(AALength) as AverageAALength FROM protein)")
+    proteins = cursor.fetchall()
 
     return render_template('amino.html', proteins=proteins, amino=amino, now=datetime.utcnow())
 
@@ -161,21 +126,11 @@ def aminoAcidLength():
 def paperDateJournal():
     allpapers = Paper.query.all()
 
-    try:
-        conn = mysql.connector.connect(host='localhost', database='covid',user='student',password='student')
-        if conn.is_connected():
-            cursor = conn.cursor(dictionary=True)
-        else:
-            return ('problem')
+    cursor = mysql.connection.cursor()
 
-        cursor.execute("SELECT * FROM paper WHERE Journal='Cell Mol Immunol.' AND PublicationDate > '2021-01-01'")
-        papers = cursor.fetchall()
+    cursor.execute("SELECT * FROM paper WHERE Journal='Cell Mol Immunol.' AND PublicationDate > '2021-01-01'")
+    papers = cursor.fetchall()
 
-    except Error as e:
-          print(e)
-
-    finally:
-        conn.close()
 
     return render_template('paperDJ.html', papers=papers, now=datetime.utcnow())
 

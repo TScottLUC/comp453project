@@ -1,0 +1,5 @@
+mysql_host: 'localhost'
+mysql_user: 'YOUR USERNAME HERE'
+# Enter your password in field below
+mysql_password: 'YOUR PASSWORD HERE'
+mysql_db: 'covid'
