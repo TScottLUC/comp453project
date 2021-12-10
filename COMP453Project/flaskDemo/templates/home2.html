@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+{% block content %}
+    {% for protein in proteins %}
+        <article class="media content-section">
+          <div class="media-body">
+            <h2><a class="nav-item nav-link" href="{{ url_for('protein', UniProtEntryID=protein.UniProtEntryID) }}">{{ protein.UniProtEntryID }}</a></h2>
+          </div>
+        </article>
+    {% endfor %}
+{% endblock content %}
