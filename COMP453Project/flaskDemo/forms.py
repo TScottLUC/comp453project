@@ -25,14 +25,6 @@ for row in goterms:
 gotermChoices = [(row['GOTermID'],row['Name']) for row in results]
 
 
-qualifiers = GOAnnotations.query.with_entities(GOAnnotations.Qualifier).distinct()
-results=list()
-for row in qualifiers:
-    rowDict=row._asdict()
-    results.append(rowDict)
-qualifierChoices = [(row['Qualifier'],row['Qualifier']) for row in results]
-
-
 
 class RegistrationForm(FlaskForm):
     username = StringField('Username',
