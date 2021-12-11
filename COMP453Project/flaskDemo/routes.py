@@ -3,7 +3,7 @@ import secrets
 from PIL import Image
 from flask import render_template, url_for, flash, redirect, request
 from flaskDemo import app, db, bcrypt, mysql
-from flaskDemo.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm, AssignmentForm, GOAnnotationUpdateForm
+from flaskDemo.forms import RegistrationForm, LoginForm, UpdateAccountForm, AssignmentForm, GOAnnotationUpdateForm
 from flaskDemo.models import User, Gene, Protein, Paper, Authors, Ligand, Organism, ReferencedIn, BiologicalProcess, GOAnnotations, FoundIn
 from flask_login import login_user, current_user, logout_user, login_required
 from datetime import datetime
