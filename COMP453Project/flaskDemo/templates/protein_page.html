@@ -1,37 +1,135 @@
 {% extends "layout.html" %}
 {% block content %}
 	<article class="media content-section">
+		<span id="protein" class="jump"></span>
         <div class="media-body">
-			<h2 class="article-title">{{ protein.ScientificName }}</h2>
-            <p class="article-content">UniProt ID: {{ protein.UniProtEntryID }}</p>
-			<p class="article-content">Gene ID: {{ protein.GeneID }}</p>
-			<p class="article-content">Amino acid length: {{ protein.AALength }}</p>
-			<p class="article-content">Protein's function: {{ protein.Function }}</p>
-			{% if protein.StructureFile and protein.StructureFile != "default.jpg" %}
-				<img src="{{ url_for('static', filename='PDB Images/' + protein.StructureFile) }}">
-			{% endif %}
+			<h2 class="article-title">{{ protein.ScientificName }} (UniProtID: {{ protein.UniProtEntryID }})</h2>
+			<hr>
+			<p class="article-content"><b>Function</b>: {{ protein.Function }}</p>
+			<p class="article-content"><b>Amino acid length</b>: {{ protein.AALength }}</p>
         </div>
     </article>
-	<article id="gene" class="media content-section">
+	{% if protein.StructureFile and protein.StructureFile != "default.jpg" %}
+	<article class="media content-section">
+		<span id="structure" class="jump"></span>
 		<div class="media-body">
-			<h2 class="article-title">Gene</h2>
-			<p class="article-content">Gene ID: {{ gene.GeneID }}</p>
-			<p class="article-content">Gene Name: {{ gene.GeneName }}</p>
-			<p class="article-content">Gene Symbol: {{ gene.GeneSymbol }}</p>
-			<p class="article-content">Locus Tag: {{ gene.LocusTag }}</p>
-			<p class="article-content">Sequence Length: {{ gene.SequenceLength }}</p>
+			<h2 class="article-title">Structure</h2>
+			<hr>
+				<img src="{{ url_for('static', filename='PDB Images/' + protein.StructureFile) }}" style="width:50vw;height:50vw;">
 		</div>
 	</article>
+	{% endif %}
+	<article class="media content-section">
+		<span id="gene" class="jump"></span>
+		<div class="media-body">
+			<h2 class="article-title">Gene (Gene ID: {{ gene.GeneID }})</h2>
+			<hr>
+
+			<table>
+			<tr>
+				<th>Name</th>
+				<th>Symbol</th>
+				<th>Locus Tag</th>
+				<th>Sequence Length</th>
+			  </tr>
+			<tr>
+				<td>{{ gene.GeneName }}</td>
+				<td>{{ gene.GeneSymbol }}</td>
+				<td>{{ gene.LocusTag }}</td>
+				<td>{{ gene.SequenceLength }}</td>
+			  </tr>
+			</table>
+		</div>
+	</article>
+	{% if goannotations.count() != 0 %}
+	<article class="media content-section">
+		<span id="goannotations" class="jump"></span>
+		<div class="media-body">
+			<h2 class="article-title">GO Annotations</h2>
+			<hr>
+			<table>
+			<tr>
+				<th>Biological Process</th>
+				<th>GO Term ID</th>
+				<th>Qualifier</th>
+			  </tr>
+			{% for goannotation in goannotations %}
+			<tr>
+				<td>{{ goannotation.Name }}</td>
+				<td>{{ goannotation.GOTermID }}</td>
+				<td>{{ goannotation.Qualifier }}</td>
+			  </tr>
+			{% endfor %}
+			</table>
+		</div>
+	</article>
+	{% endif %}
+	{% if ligands.count() != 0 %}
+	<article class="media content-section">
+		<span id="ligands" class="jump"></span>
+		<div class="media-body">
+			<h2 class="article-title">Ligands</h2>
+			<hr>
+			<table>
+			<tr>
+				<th>Name</th>
+				<th>ID</th>
+				<th>Formula</th>
+				<th>Image</th>
+			  </tr>
+			{% for ligand in ligands %}
+			<tr>
+				<td>{{ ligand.LigandName }}</td>
+				<td>{{ ligand.LigandID }}</td>
+				<td>{{ ligand.LigandFormula }}</td>
+				{% if ligand.DiagramFile and ligand.DiagramFile != "default.jpg" and ligand.DiagramFile != "default.jpq" %}
+				<td><img src="{{ url_for('static', filename='PDB Images/' + ligand.DiagramFile) }}" style="width:150px;height:15	0px;"></td>
+				{% else %}
+				<td>N/A</td>
+				{% endif %}
+			  </tr>
+			{% endfor %}
+			</table>
+		</div>
+	</article>
+	{% endif %}
+	{% if papers.count() != 0 %}
+	<article class="media content-section">
+		<span id="papers" class="jump"></span>
+		<div class="media-body">
+			<h2 class="article-title">Papers Referenced In</h2>
+			<hr>
+			{% for paper in papers %}
+			<article class="content-section">
+				<h5 class="article-content">{{ paper.Title }}</h5>
+				<p class="article-content text-secondary">DOI: {{ paper.DOI }}</p>
+				<p class="article-content">{{ paper.Journal }}</p>
+				<p class="article-content">Published {{ paper.PublicationDate }}</p>
+			</article>
+			{% endfor %}
+		</div>
+	</article>
+	{% endif %}
 {% endblock content %}
 
 {% block sidebar %}
-	<div class="content-section">
+	<div class="content-section" style="position:sticky; top:70px;">
 		<h3>Jump to:</h3>
 		<ul class="list-group">
+			<a href="#protein"><li class="list-group-item list-group-item-light">Protein</li></a>
+			{% if protein.StructureFile and protein.StructureFile != "default.jpg" %}
+			<a href="#structure"><li class="list-group-item list-group-item-light">Structure</li></a>
+			{% endif %}
 			<a href="#gene"><li class="list-group-item list-group-item-light">Gene</li></a>
-			<li class="list-group-item list-group-item-light">Other</li>
-			<li class="list-group-item list-group-item-light">Other2</li>
-			<li class="list-group-item list-group-item-light">Other3</li>
+			{% if goannotations.count() != 0 %}
+			<a href="#goannotations"><li class="list-group-item list-group-item-light">GO Annotations</li></a>
+			{% endif %}
+			{% if ligands.count() != 0 %}
+			<a href="#ligands"><li class="list-group-item list-group-item-light">Ligands</li></a>
+			{% endif %}
+			{% if papers.count() != 0 %}
+			<a href="#papers"><li class="list-group-item list-group-item-light">Papers</li></a>
+			{% endif %}
 		</ul>
 		</p>
 	</div>

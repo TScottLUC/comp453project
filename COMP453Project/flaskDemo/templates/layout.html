@@ -27,13 +27,11 @@
           <div class="collapse navbar-collapse" id="navbarToggle">
             <div class="navbar-nav mr-auto">
               <a class="nav-item nav-link" href="{{ url_for('home') }}">Home</a>
-              <a class="nav-item nav-link" href="{{ url_for('about') }}">About</a>
+                <a class="nav-item nav-link" href="{{ url_for('go_annotations') }}">GO Annotations</a>
             </div>
             <!-- Navbar Right Side -->
             <div class="navbar-nav">
               {% if current_user.is_authenticated %}
-                <a class="nav-item nav-link" href="{{ url_for('go_assignments') }}">GO Assignments</a>
-				<a class="nav-item nav-link" href="{{ url_for('new_assign') }}">New Assignment</a>
                 <a class="nav-item nav-link" href="{{ url_for('account') }}">Account</a>
                 <a class="nav-item nav-link" href="{{ url_for('logout') }}">Logout</a>
 
@@ -62,13 +60,12 @@
         </div>
         <div class="col-md-4">
           <div class="content-section">
-            <h3>Our Sidebar</h3>
-            <p class='text-muted'>You can put any information here you'd like.
+            <h3>Interesting Links:</h3>
               <ul class="list-group">
-                <li class="list-group-item list-group-item-light">Latest Activity</li>
-                <li class="list-group-item list-group-item-light">Announcements</li>
-                <li class="list-group-item list-group-item-light">Calendars</li>
-                <li class="list-group-item list-group-item-light">etc</li>
+                  <a href="{{ url_for('aminoAcidLength') }}"><li class="list-group-item list-group-item-light">Large Proteins</li></a>
+                  <a href="{{ url_for('paperDateJournal') }}"><li class="list-group-item list-group-item-light">Cellular and Molecular Immunology Papers (From 2020-Present)</li></a>
+                  <a href="{{ url_for('paperByYear') }}"><li class="list-group-item list-group-item-light">2021 Papers</li></a>
+                  <a href="{{ url_for('annotationQualifierGoID') }}"><li class="list-group-item list-group-item-light">Proteins that Enable Protein Binding</li></a>
               </ul>
             </p>
           </div>

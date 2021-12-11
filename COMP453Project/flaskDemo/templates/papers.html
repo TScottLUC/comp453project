@@ -1,0 +1,13 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h1>{{ title }}</h1>
+    <hr>
+    {% for paper in papers %}
+    <article class="content-section">
+        <h5 class="article-content">{{ paper.Title }}</h5>
+        <p class="article-content text-secondary">DOI: {{ paper.DOI }}</p>
+        <p class="article-content">{{ paper.Journal }}</p>
+        <p class="article-content">Published {{ paper.PublicationDate }}</p>
+    </article>
+    {% endfor %}
+{% endblock content %}

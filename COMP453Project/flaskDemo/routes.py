@@ -1,7 +1,7 @@
 import os
 import secrets
 from PIL import Image
-from flask import render_template, url_for, flash, redirect, request, abort
+from flask import render_template, url_for, flash, redirect, request
 from flaskDemo import app, db, bcrypt, mysql
 from flaskDemo.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm, AssignmentForm, GOAnnotationUpdateForm
 from flaskDemo.models import User, Gene, Protein, Paper, Authors, Ligand, Organism, ReferencedIn, BiologicalProcess, GOAnnotations, FoundIn
@@ -35,34 +35,33 @@ def protein(UniProtEntryID):
 
     gene = cursor.fetchone()
 
-    return render_template('protein_page.html', title=protein.UniProtEntryID, protein=protein, gene=gene, now=datetime.utcnow())
+    goannotations = GOAnnotations.query.filter(GOAnnotations.UniProtEntryID == UniProtEntryID).join(BiologicalProcess, BiologicalProcess.GOTermID == GOAnnotations.GOTermID).add_columns(BiologicalProcess.GOTermID, BiologicalProcess.Name, GOAnnotations.Qualifier)
+    ligands = Ligand.query.filter(Ligand.UniProtEntryID == UniProtEntryID)
+    papers = ReferencedIn.query.filter(ReferencedIn.UniProtEntryID == UniProtEntryID).join(Paper, Paper.DOI == ReferencedIn.DOI).add_columns(ReferencedIn.DOI, Paper.Title, Paper.Journal, Paper.PublicationDate)
+
+    return render_template('protein_page.html', title=protein.UniProtEntryID, protein=protein, gene=gene, goannotations=goannotations, ligands=ligands, papers=papers)
 
 
 @app.route("/")
-@app.route("/go_assignments")
-def go_assignments():
+@app.route("/go_annotations")
+def go_annotations():
     results = Protein.query.join(GOAnnotations, Protein.UniProtEntryID == GOAnnotations.UniProtEntryID) \
                 .add_columns(Protein.UniProtEntryID, Protein.ScientificName, Protein.Function, Protein.AALength) \
                 .join(BiologicalProcess, GOAnnotations.GOTermID == BiologicalProcess.GOTermID) \
                 .add_columns(BiologicalProcess.GOTermID, BiologicalProcess.Name, GOAnnotations.Qualifier)
-    return render_template('assign_home.html', title="GO Annotations", m_n_join = results)
+    return render_template('go_annotations.html', title="GO Annotations", m_n_join = results)
 
 
-@app.route("/about")
-def about():
-    return render_template('about.html', title='About')
-
-
-@app.route("/assignments/<GOTermID>/<UniProtEntryID>", methods=['Get','Post'])
+@app.route("/go_annotations/<GOTermID>/<UniProtEntryID>", methods=['Get','Post'])
 @login_required
-def assign(GOTermID, UniProtEntryID):
+def go_annotation(GOTermID, UniProtEntryID):
     goannotation = GOAnnotations.query.get_or_404([UniProtEntryID, GOTermID])
-    return render_template('assign.html', title=goannotation.UniProtEntryID + '_' + goannotation.GOTermID, goannotation=goannotation, now=datetime.utcnow())
+    return render_template('edit_go_annotation.html', title=goannotation.UniProtEntryID + '_' + goannotation.GOTermID, goannotation=goannotation, now=datetime.utcnow())
 
 
-@app.route("/assignment/new", methods=['Get','Post'])
+@app.route("/go_annotations/new", methods=['Get','Post'])
 @login_required
-def new_assign():
+def new_go_annotation():
     form = AssignmentForm()
     if form.validate_on_submit():
         assign = GOAnnotations(UniProtEntryID=form.UniProtEntryID.data, GOTermID=form.GOTermID.data, Qualifier=form.Qualifier.data)
@@ -70,14 +69,14 @@ def new_assign():
         db.session.commit()
         flash('You have added a new assignment!', 'success')
         return redirect(url_for('go_assignments'))
-    return render_template('create_assign.html', title='New Assignment',
-                           form=form, legend='New Assignment')
+    return render_template('create_go_annotation.html', title='New GO Annotation',
+                           form=form, legend='New GO Annotation')
 
 
 
-@app.route("/assign/<GOTermID>/<UniProtEntryID>/delete", methods=['POST'])
+@app.route("/go_annotations/<GOTermID>/<UniProtEntryID>/delete", methods=['POST'])
 @login_required
-def delete_assign(GOTermID, UniProtEntryID):
+def delete_go_annotation(GOTermID, UniProtEntryID):
     goannotation = GOAnnotations.query.get_or_404([UniProtEntryID, GOTermID])
     db.session.delete(goannotation)
     db.session.commit()
@@ -85,9 +84,9 @@ def delete_assign(GOTermID, UniProtEntryID):
     return redirect(url_for('go_assignments'))
 
 
-@app.route("/assign/<GOTermID>/<UniProtEntryID>/update", methods=['GET', 'POST'])
+@app.route("/go_annotations/<GOTermID>/<UniProtEntryID>/update", methods=['GET', 'POST'])
 @login_required
-def update_assign(GOTermID, UniProtEntryID):
+def update_go_annotation(GOTermID, UniProtEntryID):
 
     goAnnotation = GOAnnotations.query.get_or_404([UniProtEntryID, GOTermID])
     currentUniProtEntryID = goAnnotation.UniProtEntryID
@@ -106,10 +105,10 @@ def update_assign(GOTermID, UniProtEntryID):
         form.UniProtEntryID.data = currentUniProtEntryID
         form.GOTermID.data = currentGOTermID
         form.Qualifier.data = currentQualifier
-    return render_template('create_assign.html', title='Update Assignment',
-                           form=form, legend='Update Assignment')
+    return render_template('create_go_annotation.html', title='Update GO Annotation',
+                           form=form, legend='Update GO Annotation')
 
-@app.route("/AALength", methods=['Get','Post'])
+@app.route("/largeProteins", methods=['Get','Post'])
 def aminoAcidLength():
     proteins = Protein.query.all()
 
@@ -119,35 +118,34 @@ def aminoAcidLength():
     cursor.execute("SELECT * FROM protein WHERE AALength > (SELECT AVG(AALength) as AverageAALength FROM protein)")
     proteins = cursor.fetchall()
 
-    return render_template('amino.html', proteins=proteins, amino=amino, now=datetime.utcnow())
+    return render_template('amino.html', proteins=proteins, amino=amino, title="Large Proteins")
 
 
-@app.route("/paperDJ", methods=['Get','Post'])
+@app.route("/cellMolImmunolPapers", methods=['Get','Post'])
 def paperDateJournal():
     allpapers = Paper.query.all()
 
     cursor = mysql.connection.cursor()
 
-    cursor.execute("SELECT * FROM paper WHERE Journal='Cell Mol Immunol.' AND PublicationDate > '2021-01-01'")
+    cursor.execute("SELECT * FROM paper WHERE Journal='Cell Mol Immunol.' AND PublicationDate > '2020-01-01'")
     papers = cursor.fetchall()
 
 
-    return render_template('paperDJ.html', papers=papers, now=datetime.utcnow())
+    return render_template('papers.html', papers=papers, title="Cellular and Molecular Immunology Papers (2020-Present)")
 
 
-@app.route("/paperYears", methods=['Get', 'Post'])
+@app.route("/2021Papers", methods=['Get', 'Post'])
 def paperByYear():
     allpapers = Paper.query.all()
     papers = Paper.query.filter(Paper.PublicationDate > '2021-01-01')
 
-    return render_template('paperYears.html', papers=papers, now=datetime.utcnow())
+    return render_template('papers.html', papers=papers, title="2021 Papers")
 
-@app.route("/annotationQualifierGoID", methods=['Get', 'Post'])
+@app.route("/enablesProteinBinding", methods=['Get', 'Post'])
 def annotationQualifierGoID():
-    proteins = GOAnnotations.query.filter(GOAnnotations.Qualifier == 'enables', GOAnnotations.GOTermID== 'GO:0005515')
-    #proteins = Protein.query.filter(Protein.UniProtEntryID.in_(subquery)).distinct()
+    proteins = GOAnnotations.query.filter(GOAnnotations.Qualifier == 'enables', GOAnnotations.GOTermID== 'GO:0005515').join(Protein, GOAnnotations.UniProtEntryID==Protein.UniProtEntryID).add_columns(Protein.UniProtEntryID, Protein.Function, Protein.AALength, Protein.StructureFile, Protein.ScientificName)
 
-    return render_template('home2.html', proteins=proteins, now=datetime.utcnow())
+    return render_template('enablesProteinBinding.html', proteins=proteins, title="Enables Protein Binding")
 
 @app.route("/register", methods=['GET', 'POST'])
 def register():

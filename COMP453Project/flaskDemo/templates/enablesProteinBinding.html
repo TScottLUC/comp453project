@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h1>Proteins that enable protein binding</h1>
+    <hr>
+	{% for protein in proteins %}
+	<article class="media content-section">
+        <div class="media-body">
+			<h2 class="article-title">{{ protein.ScientificName }} (UniProtID: {{ protein.UniProtEntryID }})</h2>
+			<hr>
+			<p class="article-content"><b>Function</b>: {{ protein.Function }}</p>
+			<p class="article-content"><b>Amino acid length</b>: {{ protein.AALength }}</p>
+			{% if protein.StructureFile and protein.StructureFile != "default.jpg" %}
+			<img src="{{ url_for('static', filename='PDB Images/' + protein.StructureFile) }}" style="width:50vw;height:50vw;">
+			{% endif %}
+		</div>
+	</article>
+    {% endfor %}
+{% endblock content %}

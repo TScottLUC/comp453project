@@ -1,18 +1,20 @@
 {% extends "layout.html" %}
 {% block content %}
+	<h1>Covid Proteins Home Page</h1>
+	<hr>
     {% for protein in proteins %}
         <article class="media content-section">
           <div class="media-body">
-            <h2><a class="nav-item nav-link" href="{{ url_for('protein', UniProtEntryID=protein.UniProtEntryID) }}">{{ protein.ScientificName }}</a></h2>
-            <p class="article-content">ID: {{ protein.UniProtEntryID }}</p>
+            <h4 style="margin-bottom:0;"><a href="{{ url_for('protein', UniProtEntryID=protein.UniProtEntryID) }}">{{ protein.ScientificName }}</a></h4>
+			  <small class="text-secondary"> (UniProt ID: {{ protein.UniProtEntryID }})</small>
 			{% for location in locations %}
 				{% if protein.UniProtEntryID == location.UniProtEntryID %}
-					<p class="article-content">Protein is located in: {{ location.Name }}</p>
+					<p class="article-content" style="margin-bottom:0;"><b>Location:</b> {{ location.Name }}</p>
 				{% endif %}
 			{% endfor %}
 			{% for ligand in ligands %}
 				{% if protein.UniProtEntryID == ligand.UniProtEntryID %}
-					<p class="article-content">Protein has a known ligand it binds to</p>
+					<p class="article-content" style="margin-bottom:0;">Protein has a known ligand it binds to</p>
 				{% endif %}
 			{% endfor %}
           </div>

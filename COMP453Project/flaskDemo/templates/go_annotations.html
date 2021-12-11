@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+{% block content %}
+      <div>
+        <h1 style="display:inline-block">GO Annotations</h1>
+          {% if current_user.is_authenticated and current_user.account_type=='admin' %}
+            <a style="float:right;" class="btn btn-primary btn-sm mt-1 mb-1" href="{{ url_for('new_go_annotation') }}">New GO Annotation</a>
+          {% endif %}
+      </div>
+    <hr>
+    <article>
+        <table>
+			<tr>
+				<th style="width:30%;">Protein</th>
+				<th style="width:15%;">Qualifier</th>
+				<th>Biological Process</th>
+			  </tr>
+			{% for row in m_n_join %}
+			<tr>
+				<td style="width:30%;">{{ row.ScientificName }}</td>
+				<td style="width:10%;">{{ row.Qualifier }}</td>
+				<td>{{ row.Name }}</td>
+                {% if current_user.is_authenticated and current_user.account_type=='admin' %}
+                <td style="padding:2px;"><a class="btn btn-success btn-sm mt-1 mb-1" style="margin:0;" href="{{ url_for('go_annotation', GOTermID=row.GOTermID, UniProtEntryID=row.UniProtEntryID) }}">Edit</a></td>
+                {% endif %}
+			  </tr>
+			{% endfor %}
+			</table>
+        </article>
+{% endblock content %}

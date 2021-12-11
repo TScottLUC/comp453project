@@ -88,11 +88,11 @@ class GOAnnotationUpdateForm(FlaskForm):
         self.startingGOTermID = startingGOTermID
         super(GOAnnotationUpdateForm, self).__init__()
 
-    UniProtEntryID = SelectField("UniProt Entry ID", choices=proteinChoices)
-    GOTermID = SelectField("GO Term ID", choices=gotermChoices)
+    UniProtEntryID = SelectField("Protein", choices=proteinChoices)
+    GOTermID = SelectField("GO Term", choices=gotermChoices)
     Qualifier = StringField("Qualifier", validators=[DataRequired()])
 
-    submit = SubmitField('Update this assignment')
+    submit = SubmitField('Update this GO Annotation')
 
     def validate(self):
         if not FlaskForm.validate(self):
@@ -108,7 +108,7 @@ class GOAnnotationUpdateForm(FlaskForm):
 
 class AssignmentForm(GOAnnotationUpdateForm):
 
-    submit = SubmitField('Add this assignment')
+    submit = SubmitField('Add this GO Annotation')
 
     def __init__(self):
         super(AssignmentForm, self).__init__('','')
