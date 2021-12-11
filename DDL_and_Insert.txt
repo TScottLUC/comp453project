@@ -500,7 +500,7 @@ INSERT INTO Ligand (LigandID, LigandName, LigandFormula, DiagramFile, UniProtEnt
 ("ZN", "Zinc Ion", "Zn", "ZN.png", "P0DTD1"),
 ("PEE", "1,2-dioleoyl-sn-glycero-3-phosphoethanolamine", "C41H78NO8P", "pee.png", "P0DTC7"),
 ("15P", "POLYETHYLENE GLYCOL (N=34)", "C69H140O35", "15P_500.png", "P0DTD2"),
-("CL", "CHLORIDE ION", "Cl”, "CL.png", "P0DTC9");
+("CL", "CHLORIDE ION", "Cl", "CL.png", "P0DTC9");
 
 
 INSERT INTO `user` (username, email, image_file, password, account_type)

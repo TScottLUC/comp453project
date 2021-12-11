@@ -19,6 +19,7 @@
 		</div>
 	</article>
 	{% endif %}
+	{% if gene %}
 	<article class="media content-section">
 		<span id="gene" class="jump"></span>
 		<div class="media-body">
@@ -41,6 +42,7 @@
 			</table>
 		</div>
 	</article>
+	{% endif %}
 	{% if goannotations.count() != 0 %}
 	<article class="media content-section">
 		<span id="goannotations" class="jump"></span>
@@ -120,7 +122,9 @@
 			{% if protein.StructureFile and protein.StructureFile != "default.jpg" %}
 			<a href="#structure"><li class="list-group-item list-group-item-light">Structure</li></a>
 			{% endif %}
+			{% if gene %}
 			<a href="#gene"><li class="list-group-item list-group-item-light">Gene</li></a>
+			{% endif %}
 			{% if goannotations.count() != 0 %}
 			<a href="#goannotations"><li class="list-group-item list-group-item-light">GO Annotations</li></a>
 			{% endif %}
