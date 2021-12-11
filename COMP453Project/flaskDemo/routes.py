@@ -68,7 +68,7 @@ def new_go_annotation():
         db.session.add(assign)
         db.session.commit()
         flash('You have added a new assignment!', 'success')
-        return redirect(url_for('go_assignments'))
+        return redirect(url_for('go_annotations'))
     return render_template('create_go_annotation.html', title='New GO Annotation',
                            form=form, legend='New GO Annotation')
 
@@ -81,7 +81,7 @@ def delete_go_annotation(GOTermID, UniProtEntryID):
     db.session.delete(goannotation)
     db.session.commit()
     flash('The assignment has been deleted!', 'success')
-    return redirect(url_for('go_assignments'))
+    return redirect(url_for('go_annotations'))
 
 
 @app.route("/go_annotations/<GOTermID>/<UniProtEntryID>/update", methods=['GET', 'POST'])
