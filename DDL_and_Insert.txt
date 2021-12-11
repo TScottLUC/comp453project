@@ -116,15 +116,15 @@ INSERT INTO Protein (UniProtEntryID, ScientificName, Function, AALength, Structu
 ("P0DTC6", "ORF6 Protein", "Disrupts cell nuclear import complex formation", 61, NULL, "43740572"),
 ("P0DTC8", "ORF8 Protein", "Modulates host immune response", 121, "7jtl.png", "43740577"),
 ("A0A663DJA2", "ORF10 Protein", "Protein Predicted - No function confirmed", 38, NULL, "43740576"),
-("P0DTC4", "Envelope small membrane protein", "Plays a central role in virus morphogenesis and assembly", 75, StructureFile, "43740570"),
+("P0DTC4", "Envelope small membrane protein", "Plays a central role in virus morphogenesis and assembly", 75, "7k3g.png", "43740570"),
 ("P0DTF1", "Putative ORF3b protein", "Acts as an interferon antagonist when expressed ex vivo", 22, NULL, NULL),
 ("P0DTD8", "ORF7b protein","No function specified", 43, NULL, "43740574"),
 ("P0DTD3", "Putative ORF9c protein","Protein uncertain", 73, NULL, NULL),
-("P0DTD1", "Replicase polyprotein 1ab", "Multifunctional protein involved in the transcription and replication of viral RNAs", 7096, "default.jpg", "43740578" ),
-("P0DTC3", "ORF3a protein", "Forms homotetrameric ion channels (viroporin), for virus egress", 275, "default.jpg", "43740569"),
-("P0DTC7", "ORF7a Protein", "antagonist of host tetherin (BST2)", 121, "default.jpg", "43740573"),
-("P0DTD2", "ORF9b Protein", "Acts by binding to host TOMM70, disrupting its role in the interferon activation pathway", 97, "default.jpg", NULL),
-("P0DTC9", "Nucleoprotein", "Plays a fundamental role during virion assembly", 419, "default.jpg", "43740575");
+("P0DTD1", "Replicase polyprotein 1ab", "Multifunctional protein involved in the transcription and replication of viral RNAs", 7096, NULL, "43740578" ),
+("P0DTC3", "ORF3a protein", "Forms homotetrameric ion channels (viroporin), for virus egress", 275, "6xdc.png", "43740569"),
+("P0DTC7", "ORF7a Protein", "antagonist of host tetherin (BST2)", 121, "6w37.png", "43740573"),
+("P0DTD2", "ORF9b Protein", "Acts by binding to host TOMM70, disrupting its role in the interferon activation pathway", 97, "6z4u.png", NULL),
+("P0DTC9", "Nucleoprotein", "Plays a fundamental role during virion assembly", 419, "6m3m.png", "43740575");
 
 
 /* 3b and 9c have no gene entries */
@@ -494,13 +494,13 @@ INSERT INTO FoundIn (UniProtEntryID,TaxonIdentifier)
 
 INSERT INTO Ligand (LigandID, LigandName, LigandFormula, DiagramFile, UniProtEntryID)
 	VALUES
-	("NAG", "2-acetamido-2-deoxy-beta-D-glucopyranose", "C8H15NO6", "NAG.svg", "P0DTC2"),
-("NA", "Sodium Ion", "Na", "NA.svg", "P0DTC8"),
-("GDP", "GUANOSINE-5’-DIPHOSPHATE", "C10H15N5O11P2", "default.jpg", "P0DTD1"),
-("ZN", "Zinc Ion", "Zn", "default.jpq", "P0DTD1"),
-("PEE", "1,2-dioleoyl-sn-glycero-3-phosphoethanolamine", "C41H78NO8P", "default.jpg", "P0DTC7"),
-("15P", "POLYETHYLENE GLYCOL (N=34)", "C69H140O35", "default.jpg", "P0DTD2"),
-("CL", "CHLORIDE ION", "Cl”, "default.jpg", "P0DTC9");
+	("NAG", "2-acetamido-2-deoxy-beta-D-glucopyranose", "C8H15NO6", "NAG.png", "P0DTC2"),
+("NA", "Sodium Ion", "Na", "NA.png", "P0DTC8"),
+("GDP", "GUANOSINE-5’-DIPHOSPHATE", "C10H15N5O11P2", "GDP.png", "P0DTD1"),
+("ZN", "Zinc Ion", "Zn", "ZN.png", "P0DTD1"),
+("PEE", "1,2-dioleoyl-sn-glycero-3-phosphoethanolamine", "C41H78NO8P", "pee.png", "P0DTC7"),
+("15P", "POLYETHYLENE GLYCOL (N=34)", "C69H140O35", "15P_500.png", "P0DTD2"),
+("CL", "CHLORIDE ION", "Cl”, "CL.png", "P0DTC9");
 
 
 INSERT INTO `user` (username, email, image_file, password, account_type)
