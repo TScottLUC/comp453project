@@ -11,7 +11,7 @@
 			<p class="article-content"><b>Function</b>: {{ protein.Function }}</p>
 			<p class="article-content"><b>Amino acid length</b>: {{ protein.AALength }}</p>
 			{% if protein.StructureFile and protein.StructureFile != "default.jpg" %}
-			<img src="{{ url_for('static', filename='PDB Images/' + protein.StructureFile) }}" style="width:50vw;height:50vw;">
+			<img src="{{ url_for('static', filename='PDB Images/' + protein.StructureFile) }}" style="width:90%;height:90%;">
 			{% endif %}
 		</div>
 	</article>

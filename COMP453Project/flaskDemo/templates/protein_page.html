@@ -15,7 +15,7 @@
 		<div class="media-body">
 			<h2 class="article-title">Structure</h2>
 			<hr>
-				<img src="{{ url_for('static', filename='PDB Images/' + protein.StructureFile) }}" style="width:50vw;height:50vw;">
+				<img src="{{ url_for('static', filename='PDB Images/' + protein.StructureFile) }}" style="width:90%;height:90%;">
 		</div>
 	</article>
 	{% endif %}
@@ -85,7 +85,7 @@
 				<td>{{ ligand.LigandID }}</td>
 				<td>{{ ligand.LigandFormula }}</td>
 				{% if ligand.DiagramFile and ligand.DiagramFile != "default.jpg" and ligand.DiagramFile != "default.jpq" %}
-				<td><img src="{{ url_for('static', filename='PDB Images/' + ligand.DiagramFile) }}" style="width:150px;height:15	0px;"></td>
+				<td><img src="{{ url_for('static', filename='PDB Images/' + ligand.DiagramFile) }}" style="width:150px;height:150px;"></td>
 				{% else %}
 				<td>N/A</td>
 				{% endif %}
