@@ -100,7 +100,7 @@ def update_go_annotation(GOTermID, UniProtEntryID):
         goAnnotation.Qualifier=form.Qualifier.data
         db.session.commit()
         flash('Your GO Annotation has been updated!', 'success')
-        return redirect(url_for('assign', GOTermID=goAnnotation.GOTermID, UniProtEntryID=goAnnotation.UniProtEntryID))
+        return redirect(url_for('go_annotation', GOTermID=goAnnotation.GOTermID, UniProtEntryID=goAnnotation.UniProtEntryID))
     elif request.method == 'GET':              
         form.UniProtEntryID.data = currentUniProtEntryID
         form.GOTermID.data = currentGOTermID
